@@ -10,3 +10,6 @@ window.addEventListener('DOMContentLoaded', () => {
     replaceText(`${type}-version`, process.versions[type])
   }
 })
+
+// 读取数据
+fs
