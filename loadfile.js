@@ -1,9 +1,3 @@
-// This file is required by the index.html file and will
-// be executed in the renderer process for that window.
-// No Node.js APIs are available in this process because
-// `nodeIntegration` is turned off. Use `preload.js` to
-// selectively enable features needed in the rendering
-// process.
 const fs = require('fs')
 const path = require('path')
 
@@ -34,8 +28,12 @@ items_file_name.forEach((value, index) => {
 
 let result = JSON.stringify(data)
 let end = Date.now()
-let timer = end - start
+let counter = end - start
+console.log('json 文件格式')
+console.log(result)
+console.log('载入文件总耗时：' + counter + 'ms')
+console.log('人生海海个数' + data.items.length)
+data.counter = counter
 
-document.getElementById('timer').innerText = timer
-document.getElementById('count').innerText = data.items.length
-document.getElementById('date').innerText = Date()
+// 导出变量，CommonJS规范
+module.export = { data };

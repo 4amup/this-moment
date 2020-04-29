@@ -1,23 +1,21 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
 const path = require('path')
-const fs = require('fs')
+
+// 导入数据文件
+// const data = require('./loadfile.js')
 
 function createWindow() {
-  // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 400,
-    height: 200,
+    height: 300,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      // preload: path.join(__dirname, 'loadfile.js')
+      nodeIntegration: true
     }
   })
-
-  // and load the index.html of the app.
   mainWindow.loadFile('index.html')
-
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.close()
 }
 
 // This method will be called when Electron has finished
