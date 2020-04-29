@@ -6,7 +6,7 @@ const path = require('path')
 // const data = require('./loadfile.js')
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  const win_load = new BrowserWindow({
     width: 400,
     height: 300,
     webPreferences: {
@@ -14,8 +14,15 @@ function createWindow() {
       nodeIntegration: true
     }
   })
-  mainWindow.loadFile('index.html')
-  mainWindow.close()
+  const list_win = new BrowserWindow({
+    width: 400,
+    height: 300,
+    frame: false
+  })
+  win_load.loadFile('index.html')
+  win_load.close()
+  list_win.loadFile('./pages/list.html')
+  list_win.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
