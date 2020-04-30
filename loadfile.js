@@ -1,7 +1,6 @@
+// 加载node原生模块
 const fs = require('fs')
 const path = require('path')
-
-let start = Date.now()
 
 // 路径设置
 const entry_path = path.join(__dirname, 'data/')
@@ -27,13 +26,8 @@ items_file_name.forEach((value, index) => {
 })
 
 let result = JSON.stringify(data)
-let end = Date.now()
-let counter = end - start
-console.log('json 文件格式')
 console.log(result)
-console.log('载入文件总耗时：' + counter + 'ms')
-console.log('人生海海个数' + data.items.length)
-data.counter = counter
+
 
 // 导出变量，CommonJS规范
 module.export = { data };
