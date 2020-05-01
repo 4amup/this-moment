@@ -6,19 +6,21 @@
 // process.
 
 const { remote, ipcRenderer } = require('electron')
-const main_process = remote.require('./main.js')
+const mainProcess = remote.require('./main.js')
 
 let control_element = document.getElementById('control')
 
 control_element.addEventListener("click", (ev) => {
     let button = event.target
     console.log(button.id)
-    // 将主窗口控制指令传输到main_process
+    // 将主窗口控制指令传输到mainProcess
     switch (button.id) {
         case "close":
             remote.BrowserWindow.fromId(1).hide()
             break;
-
+        case "add":
+            mainProcess.addItem()
+            break;
         default:
             break;
     }
@@ -40,7 +42,7 @@ list_element.innerText = `加载中...`
 
 let start = Date.now()
 let data = {}
-main_process.loadFile(data)
+mainProcess.loadFile(data)
 
 
 // // 加载node原生模块
