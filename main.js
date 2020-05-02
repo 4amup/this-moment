@@ -17,12 +17,10 @@ const loadFile = exports.loadFile = (data, main_win) => {
 
 function createWindow() {
     const mainWindow = new BrowserWindow({
-        width: 300,
-        height: 600,
-
-        // frame: false,
+        width: 800,
+        height: 800,
+        frame: false,
         webPreferences: {
-            // preload: path.join(__dirname, 'loadfile.js')
             nodeIntegration: true
         }
     })
@@ -35,7 +33,6 @@ const addItem = exports.addItem = () => {
     const itemWindow = new BrowserWindow({
         width: 300,
         height: 600,
-
         // frame: false,
         webPreferences: {
             // preload: path.join(__dirname, 'loadfile.js')
@@ -49,7 +46,7 @@ const addItem = exports.addItem = () => {
         itemWindow = null;
     });
 
-    itemWindow.add(itemWindow); //将item窗口添加到已打开时设置的窗口s
+    itemWindow.add(itemWindow); //将item窗口添加到已打开时设置的窗口
 }
 
 // This method will be called when Electron has finished
