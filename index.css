@@ -2,6 +2,6 @@
 body {
     -webkit-app-region: drag
 }
-button {
+button, input {
     -webkit-app-region: no-drag
 }

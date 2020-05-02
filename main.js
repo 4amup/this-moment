@@ -33,7 +33,7 @@ const addItem = exports.addItem = () => {
     const itemWindow = new BrowserWindow({
         width: 400,
         height: 600,
-        // frame: false,
+        frame: false,
         webPreferences: {
             // preload: path.join(__dirname, 'loadfile.js')
             nodeIntegration: true

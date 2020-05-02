@@ -9,6 +9,7 @@
 - [X] 设计数据结构
 - [X] electron实现
 - [X] 数据载入功能实现
+- [X] item的id使用Date.now()即毫秒数
 - [ ] list页面实现
 - [ ] 开机自启动
 - [ ] 按照windows sticky的逻辑实现
