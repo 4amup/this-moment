@@ -31,7 +31,7 @@ function createWindow() {
 
 const addItem = exports.addItem = () => {
     const itemWindow = new BrowserWindow({
-        width: 300,
+        width: 400,
         height: 600,
         // frame: false,
         webPreferences: {
@@ -39,14 +39,16 @@ const addItem = exports.addItem = () => {
             nodeIntegration: true
         }
     })
+    itemWindow.setMenu(null)
     itemWindow.loadFile(path.join(__dirname, './pages/item.html'))
 
-    itemWindow.on('closed', () => {
-        itemWindows.delete(win_main); //从已关闭的窗口Set中移除引用
-        itemWindow = null;
-    });
+    // itemWindow.on('closed', () => {
+    //     itemWindows.delete(itemWindow); //从已关闭的窗口Set中移除引用
+    //     itemWindow = null;
+    // })
 
-    itemWindow.add(itemWindow); //将item窗口添加到已打开时设置的窗口
+    // itemWindow.add(itemWindow); //将item窗口添加到已打开时设置的窗口
+    itemWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished

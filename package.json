@@ -1,21 +1,17 @@
 {
-  "name": "electron-quick-start",
+  "name": "life-timer",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "life-timer",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/4amup/life-timer.git",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+
   ],
-  "author": "GitHub",
-  "license": "CC0-1.0",
+  "author": "lixiaochun",
+  "license": "MIT",
   "devDependencies": {
     "electron": "^8.2.3"
   }

@@ -3,21 +3,25 @@
 
 <head>
   <meta charset="UTF-8">
-  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <link rel="stylesheet" type="text/css" href="item.css">
   <title>人生日历</title>
 </head>
 
 <body>
-  <div id="user-command">
-    <button id="add"></button>
-    <button id="menu"></button>
-    <button id="exit">X</button>
+  <div id="container">
+    <div id="user-command">
+      <button id="add">+</button>
+      <button id="menu">...</button>
+      <button id="exit">X</button>
+    </div>
+    <div id="content-container">
+      <input type="text" id="content">
+      <input type="datetime" name="" id="content-dt">
+    </div>
   </div>
-  <!-- 计算结果 -->
-  <p>距离高考255天</p>
-  <script src="./index.js"></script>
+  <script src="./item.js"></script>
 </body>
 
 </html>
