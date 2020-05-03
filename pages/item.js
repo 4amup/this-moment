@@ -2,16 +2,23 @@ const { remote, ipcRenderer } = require('electron')
 const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
+const currnetWindow = remote.getCurrentWindow();
 
-// item数据对象
-let item = {
-    id: null,
-    create_dt: null,
-    content: null,
-    color: null,
-    content_dt: null,
-    update_dt: null
-}
+// 从主进程实时读取最新的item数据对象
+// let item = {
+//     id: null,
+//     create_dt: null,
+//     content: null,
+//     color: null,
+//     content_dt: null,
+//     update_dt: null
+// }
+let item = mainProcess.openItemFile(currnetWindow, './data/items/1588429757886.json')
+
+// 根据收到信消息和数据，渲染页面
+ipcRenderer.on('file-opened', (event, file, content) => {
+    console.log(content)
+})
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')

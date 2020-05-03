@@ -1,21 +1,13 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow } = require('electron')
+const fs = require('fs')
 const path = require('path')
 
 // 管理item窗口的多窗口引用
 const itemWindows = new Set();
 
-// 导入数据文件
-// const data = require('./loadfile.js')
-const loadFile = exports.loadFile = () => {
-    let { data } = require('./loadfile.js')
-    return data
-    // if (data) {
-    //     window.webContents.send('load-file', data)
-    // }
-}
-
-function createWindow() {
+// 创建item窗口
+function createMainWindow() {
     const mainWindow = new BrowserWindow({
         width: 800,
         height: 800,
@@ -29,45 +21,47 @@ function createWindow() {
     mainWindow.webContents.openDevTools()
 }
 
-const addItem = exports.addItem = () => {
+// 创建主窗口
+const createItemWindow = exports.createItemWindow = () => {
     const itemWindow = new BrowserWindow({
         width: 400,
         height: 600,
         frame: false,
         webPreferences: {
-            // preload: path.join(__dirname, 'loadfile.js')
             nodeIntegration: true
         }
     })
     itemWindow.setMenu(null)
     itemWindow.loadFile(path.join(__dirname, './pages/item.html'))
 
-    // itemWindow.on('closed', () => {
-    //     itemWindows.delete(itemWindow); //从已关闭的窗口Set中移除引用
-    //     itemWindow = null;
-    // })
+    itemWindow.once('ready-to-show', () => {
+        itemWindow.show();
+      });
 
-    // itemWindow.add(itemWindow); //将item窗口添加到已打开时设置的窗口
+    itemWindow.on('closed', () => {
+        itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
+        itemWindow = null;
+    })
+
+    itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
     itemWindow.webContents.openDevTools()
+    return itemWindow
+}
+
+// 打开item窗口对应文件，并将数据发送到对象item窗口
+const openItemFile = exports.openItemFile = (targetWindow, file) => {
+    const content = fs.readFileSync(file).toString();
+    targetWindow.webContents.send('file-opened', file, content); // 将文件的内容发送到提供的浏览器窗口
 }
 
 // This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.whenReady().then(createWindow)
+app.whenReady().then(createMainWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-    // On macOS it is common for applications and their menu bar
-    // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit()
 })
 
 app.on('activate', function () {
-    // On macOS it's common to re-create a window in the app when the
-    // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
 })
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.

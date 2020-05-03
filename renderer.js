@@ -12,7 +12,7 @@ userComand.addEventListener("click", (event) => {
             remote.getCurrentWindow().close()
             break;
         case "add":
-            mainProcess.addItem()
+            mainProcess.createItemWindow()
             break;
         default:
             break;
@@ -51,6 +51,6 @@ list_element.appendChild(message)
 list_element.addEventListener("dblclick", (event) => {
     let item = event.target
     if (item.className == "item") {
-        mainProcess.addItem()
+        mainProcess.createItemWindow()
     }
 })
