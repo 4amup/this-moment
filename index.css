@@ -5,3 +5,7 @@ body {
 button, input {
     -webkit-app-region: no-drag
 }
+
+.item {
+    -webkit-app-region: no-drag
+}

@@ -16,6 +16,7 @@ let data = JSON.parse(data_json)
 
 // 读取items文件名
 let items_file_name = fs.readdirSync(items_path)
+
 // 遍历读取items文件内容并放入items数组中
 data.items = []
 items_file_name.forEach((value, index) => {
@@ -25,9 +26,5 @@ items_file_name.forEach((value, index) => {
     data.items[index] = item
 })
 
-let result = JSON.stringify(data)
-console.log(result)
-
-
-// 导出变量，CommonJS规范
-module.export = { data };
+// 导出一个对象，CommonJS规范
+module.exports = data

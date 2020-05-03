@@ -7,12 +7,12 @@ const itemWindows = new Set();
 
 // 导入数据文件
 // const data = require('./loadfile.js')
-const data = {}
-const loadFile = exports.loadFile = (data, main_win) => {
-    data = require('./loadfile.js')
-    if (data) {
-        main_win.webContents.send('load-file', data)
-    }
+const loadFile = exports.loadFile = () => {
+    let { data } = require('./loadfile.js')
+    return data
+    // if (data) {
+    //     window.webContents.send('load-file', data)
+    // }
 }
 
 function createWindow() {
