@@ -27,6 +27,8 @@ list_element.innerText = `加载中...`
 // 导入数据
 let start = Date.now()
 let data = remote.require('./loadfile.js')
+remote.getGlobal('data').test = 'ddddtest' //update 主进程data全局变量
+console.log(remote.getGlobal('data').test)
 let end = Date.now()
 let timer = end - start
 

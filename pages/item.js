@@ -2,18 +2,18 @@ const { remote, ipcRenderer } = require('electron')
 const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
-const currnetWindow = remote.getCurrentWindow();
+const currnetWindow = remote.getCurrentWindow()
 
 // 从主进程实时读取最新的item数据对象
-// let item = {
-//     id: null,
-//     create_dt: null,
-//     content: null,
-//     color: null,
-//     content_dt: null,
-//     update_dt: null
-// }
-let item = mainProcess.openItemFile(currnetWindow, './data/items/1588429757886.json')
+let item = {
+    id: null,
+    create_dt: null,
+    content: null,
+    color: null,
+    content_dt: null,
+    update_dt: null
+}
+// let item = mainProcess.openItemFile(currnetWindow, './data/items/1588429757886.json')
 
 // 根据收到信消息和数据，渲染页面
 ipcRenderer.on('file-opened', (event, file, content) => {
@@ -31,7 +31,9 @@ userComand.addEventListener("click", (event) => {
             remote.getCurrentWindow().close()
             break;
         case "add":
-            mainProcess.addItem()
+            mainProcess.createItemWindow()
+            break;
+        case "del":
             break;
         default:
             break;
@@ -63,7 +65,7 @@ function saveCotent(event) {
     // db save
     let itemPath = path.join('./data/items/', item.id + '.json')
     fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
-        if (err) throw err;
-        console.log('The file has been saved!');
+        if (err) throw err
+        console.log(item.id + "is saved")
     });
 }
