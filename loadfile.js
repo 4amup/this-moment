@@ -1,3 +1,5 @@
+// 此文件的功能是从文件中读取持久化储存的全部文件
+
 // 加载node原生模块
 const fs = require('fs')
 const path = require('path')

@@ -27,11 +27,13 @@ list_element.innerText = `加载中...`
 // 导入数据
 let start = Date.now()
 let data = remote.require('./loadfile.js')
-remote.getGlobal('data').test = 'ddddtest' //update 主进程data全局变量
-console.log(remote.getGlobal('data').test)
+remote.getGlobal('data').data = data //update 主进程data全局变量
+console.log(remote.getGlobal('data').data)
 let end = Date.now()
 let timer = end - start
 
+// 加载完毕，向主进程发送消息
+ipcRenderer.send('load-data', data.items)
 
 // 加载完毕，清掉之前的等待状态，切换为根据结果构建的list列表
 list_element.innerText = null
