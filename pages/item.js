@@ -20,12 +20,28 @@ userComand.addEventListener("click", (event) => {
     // 将主窗口控制指令传输到mainProcess
     switch (button.id) {
         case "exit":
-            remote.getCurrentWindow().close()
+            currnetWindow.close()
             break;
         case "add":
             mainProcess.createItemWindow()
             break;
         case "del":
+            if (item == undefined) {
+                currnetWindow.close()
+            } else {
+                items = remote.getGlobal('data').data.items
+                for (let index = 0; index < items.length; index++) {
+                    const item = items[index];
+                    if (item.id == itemId) {
+                        items.splice(index, 1)
+                    }
+                }
+                remote.getGlobal('data').data.items = items
+                ipcRenderer.send('update-items')
+                let itemPath = path.join('./data/items/', item.id + '.json')
+                fs.unlinkSync(itemPath)
+                currnetWindow.close()
+            }
             break;
         default:
             break;
@@ -79,5 +95,5 @@ function saveCotent(event) {
 
     remote.getGlobal('data').data.items = items
     
-    ipcRenderer.send('item-save', item)
+    ipcRenderer.send('update-items')
 }

@@ -57,7 +57,9 @@ function createMainWindow() {
     mainWindow.setMenu(null)
     mainWindow.loadFile('index.html')
     mainWindow.webContents.openDevTools()
-    // return mainWindow
+    mainWindow.on('closed', () => {
+        mainWindow = null
+    })
 }
 
 // 创建item窗口
@@ -129,7 +131,6 @@ ipcMain.on('load-data', (event) => {
 })
 
 // item窗口更新完毕后，更新主进程数据
-ipcMain.on('item-save', (event, item) => {
-    // mainWindow.webContents.reload()
-    mainWindow.reload()
+ipcMain.on('update-items', () => {
+    if (mainWindow) mainWindow.reload()
 })
