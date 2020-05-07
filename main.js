@@ -16,6 +16,8 @@ let data = null
 
 let loadWindow = null;
 
+let mainWindow = null;
+
 // 创建数据载入窗口
 const createLoadWindow = exports.createLoadWindow = () => {
     loadWindow = new BrowserWindow({
@@ -43,7 +45,8 @@ const createLoadWindow = exports.createLoadWindow = () => {
 
 // 创建main窗口
 function createMainWindow() {
-    const mainWindow = new BrowserWindow({
+    // const mainWindow = new BrowserWindow({
+    mainWindow = new BrowserWindow({
         width: 800,
         height: 800,
         frame: false,
@@ -54,10 +57,11 @@ function createMainWindow() {
     mainWindow.setMenu(null)
     mainWindow.loadFile('index.html')
     mainWindow.webContents.openDevTools()
+    // return mainWindow
 }
 
 // 创建item窗口
-const createItemWindow = exports.createItemWindow = (item) => {
+const createItemWindow = exports.createItemWindow = (itemId) => {
     const itemWindow = new BrowserWindow({
         width: 400,
         height: 600,
@@ -68,7 +72,7 @@ const createItemWindow = exports.createItemWindow = (item) => {
     })
 
     // 将数据id传递给窗口
-    itemWindow.itemId = item.id
+    itemWindow.itemId = itemId
     itemWindow.setMenu(null)
     itemWindow.loadFile(path.join(__dirname, './pages/item.html'))
 
@@ -108,7 +112,7 @@ app.on('activate', function () {
 
 
 // 根据主窗口异步消息，加载数据，加载数据完成后，创建main窗口
-ipcMain.on('load-data', (event, arg) => {
+ipcMain.on('load-data', (event) => {
     // 同步开始载入文件
     global.data.data = require('./loadfile')
 
@@ -117,9 +121,15 @@ ipcMain.on('load-data', (event, arg) => {
 
     // 创建打开状态item窗口
     global.data.data.items.forEach(item => {
-        createItemWindow(item)
+        createItemWindow(item.id)
     });
 
     // 发送消息，关闭数据载入窗口
     event.sender.send('load-end')
+})
+
+// item窗口更新完毕后，更新主进程数据
+ipcMain.on('item-save', (event, item) => {
+    // mainWindow.webContents.reload()
+    mainWindow.reload()
 })

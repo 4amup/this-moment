@@ -55,6 +55,6 @@ list_element.appendChild(message)
 list_element.addEventListener("dblclick", (event) => {
     let item = event.target
     if (item.className == "item") {
-        mainProcess.createItemWindow()
+        mainProcess.createItemWindow(item.id)
     }
 })

@@ -5,17 +5,10 @@ const path = require('path')
 const currnetWindow = remote.getCurrentWindow()
 const itemId = currnetWindow.itemId
 
-// 从主进程实时读取最新的item数据对象
-let item = {
-    id: itemId,//新建窗口id为空，读取的话是有id的
-    create_dt: null,
-    content: null,
-    color: null,
-    content_dt: null,
-    update_dt: null
-}
+let items = remote.getGlobal('data').data.items
 
-item = remote.getGlobal('data').data.items.find(item => {
+// 从主进程实时读取最新的item数据对象
+let item = items.find(item => {
     return item.id == itemId
 })
 
@@ -44,7 +37,8 @@ let content = document.getElementById("content")
 let content_dt = document.getElementById("content-dt")
 
 // 初始赋值
-content.value = item.content
+if (item != undefined) content.value = item.content
+
 
 // 内容改变事件监听，自动保存
 content.addEventListener("change", saveCotent)
@@ -53,9 +47,11 @@ content_dt.addEventListener("change", saveCotent)
 // 定义数据保存函数
 function saveCotent(event) {
     // id初始赋值
-    if (item.id == null) {
-        item.id = Date.now()
-        item.create_dt = Date.now()
+    if (item == undefined) {
+        item = {
+            id: Date.now(),
+            create_dt: Date.now(),
+        }
     }
 
     // 数据更新
@@ -69,4 +65,19 @@ function saveCotent(event) {
         if (err) throw err
         console.log(item.id + "is saved")
     });
+
+    // 数据更新到主线程的数据中，add或者update
+    let index = items.findIndex((value,index,item) => {
+        return value.id == itemId
+    })
+
+    if (index == -1) {
+        items.push(item)
+    } else {
+        items[index] = item
+    }
+
+    remote.getGlobal('data').data.items = items
+    
+    ipcRenderer.send('item-save', item)
 }
