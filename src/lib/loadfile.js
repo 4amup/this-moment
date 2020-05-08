@@ -5,13 +5,12 @@ const fs = require('fs')
 const path = require('path')
 
 // 路径设置
-// const entry_path = path.join(__dirname, 'userdata/')
-const entry_path = path.join(__dirname,"../userdata/")
-const setting_path = "setting.json"
+const entry_path = path.join(__dirname, '../../data/')
+const setting_path = path.join(__dirname, '../../setting.json')
 
 // 拼接路径
-let header_path = path.join(entry_path, setting_path)
-let items_path = path.join(entry_path, "items/")
+let header_path = path.join(setting_path)
+let items_path = path.join(entry_path)
 
 // 读取header设置，并转化为可操作的对象
 let data_json = fs.readFileSync(header_path, 'utf8')

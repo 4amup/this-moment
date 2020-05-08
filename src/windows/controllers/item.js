@@ -80,7 +80,7 @@ function saveCotent() {
     item.open = true
 
     // db save
-    let itemPath = path.join(__dirname,'../../userdata/items/', item.id + '.json')
+    let itemPath = path.join('./data', item.id + '.json')
     fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
         if (err) throw err
         console.log(item.id + "is saved")
@@ -108,7 +108,7 @@ function delItem() {
         currnetWindow.close()
     } else {
         // 文件路径
-        let itemPath = path.join('./data/items/', item.id + '.json')
+        let itemPath = path.join('./data/', item.id + '.json')
         // fs.unlinkSync(itemPath)
 
         // 异步处理删除文件操作，删除成功后关闭窗口，更新全局数据
