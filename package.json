@@ -2,7 +2,7 @@
   "name": "life-timer",
   "version": "1.0.0",
   "description": "life-timer",
-  "main": "./src/index.js",
+  "main": "./src/main.js",
   "scripts": {
     "start": "electron ."
   },

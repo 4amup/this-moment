@@ -1,5 +1,5 @@
 const { remote } = require('electron')
-const mainProcess = remote.require('main')
+const mainProcess = remote.require('./main.js')
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')
