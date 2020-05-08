@@ -1,5 +1,5 @@
-const { remote, ipcRenderer } = require('electron')
-const mainProcess = remote.require('./main.js')
+const { remote } = require('electron')
+const mainProcess = remote.require('main')
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')

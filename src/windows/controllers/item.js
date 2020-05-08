@@ -1,5 +1,5 @@
 const { remote, ipcRenderer } = require('electron')
-const mainProcess = remote.require('./main.js')
+const mainProcess = remote.require('main.js')
 const fs = require('fs')
 const path = require('path')
 const currnetWindow = remote.getCurrentWindow()

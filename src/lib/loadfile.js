@@ -5,7 +5,8 @@ const fs = require('fs')
 const path = require('path')
 
 // 路径设置
-const entry_path = path.join(__dirname, 'data/')
+// const entry_path = path.join(__dirname, 'userdata/')
+const entry_path = path.join(__dirname,"../userdata/")
 const setting_path = "setting.json"
 
 // 拼接路径
@@ -29,4 +30,5 @@ items_file_name.forEach((value, index) => {
 })
 
 // 导出一个对象，CommonJS规范
+// 后续目标，导出一个对象类，可以直接使用的
 module.exports = data

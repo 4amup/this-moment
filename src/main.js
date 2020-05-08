@@ -1,22 +1,16 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, ipcMain } = require('electron')
 const fs = require('fs')
-const path = require('path')
-
-// 管理item窗口的多窗口引用
-const itemWindows = new Set();
 
 // 数据对象data，初始化时为空，在加载完mainWindow后，此对象被赋值
 global.data = {
     data: null
 }
 
-// 数据对象
-let data = null
-
-let loadWindow = null;
-
-let mainWindow = null;
+// 窗口引用
+let loadWindow = null
+let listWindow = null
+let itemWindows = new Set()
 
 // 创建数据载入窗口
 const createLoadWindow = exports.createLoadWindow = () => {
@@ -24,14 +18,15 @@ const createLoadWindow = exports.createLoadWindow = () => {
         width: 200,
         height: 200,
         webPreferences: {
-            nodeIntegration: true
-        }
+            nodeIntegration: true,
+            // webSecurity: false
+        },
     })
 
-    loadWindow.loadFile(path.join(__dirname, './pages/load.html'))
+    loadWindow.loadURL(`file://${__dirname}/windows/views/load.html`)
 
     loadWindow.once('ready-to-show', () => {
-        loadWindow.show();
+        loadWindow.show()
     })
 
     // 窗口关闭事件
@@ -39,13 +34,12 @@ const createLoadWindow = exports.createLoadWindow = () => {
         loadWindow = null
     })
 
-
     loadWindow.webContents.openDevTools()
 }
 
 // 创建main窗口
-function createMainWindow() {
-    mainWindow = new BrowserWindow({
+function createListWindow() {
+    listWindow = new BrowserWindow({
         width: 400,
         height: 500,
         frame: false,
@@ -53,11 +47,11 @@ function createMainWindow() {
             nodeIntegration: true
         }
     })
-    mainWindow.setMenu(null)
-    mainWindow.loadFile('index.html')
-    // mainWindow.webContents.openDevTools()
-    mainWindow.on('closed', () => {
-        mainWindow = null
+    listWindow.setMenu(null)
+    listWindow.loadURL(`file://${__dirname}/windows/views/list.html`)
+    listWindow.webContents.openDevTools()
+    listWindow.on('closed', () => {
+        listWindow = null
     })
 }
 
@@ -75,7 +69,7 @@ const createItemWindow = exports.createItemWindow = (itemId) => {
     // 将数据id传递给窗口
     itemWindow.itemId = itemId
     itemWindow.setMenu(null)
-    itemWindow.loadFile(path.join(__dirname, './pages/item.html'))
+    itemWindow.loadURL(`file://${__dirname}/windows/views/item.html`)
 
     itemWindow.once('ready-to-show', () => {
         itemWindow.show();
@@ -87,7 +81,7 @@ const createItemWindow = exports.createItemWindow = (itemId) => {
     })
 
     itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
-    // itemWindow.webContents.openDevTools()
+    itemWindow.webContents.openDevTools()
     return itemWindow
 }
 
@@ -97,8 +91,6 @@ const openItemFile = exports.openItemFile = (targetWindow, file) => {
     targetWindow.webContents.send('file-opened', file, content); // 将文件的内容发送到提供的浏览器窗口
 }
 
-// This method will be called when Electron has finished
-// app.whenReady().then(createMainWindow)
 // app准备好之后，加载载入文件窗口
 app.whenReady().then(createLoadWindow)
 
@@ -115,10 +107,10 @@ app.on('activate', function () {
 // 根据主窗口异步消息，加载数据，加载数据完成后，创建main窗口
 ipcMain.on('load-data', (event) => {
     // 同步开始载入文件
-    global.data.data = require('./loadfile')
+    global.data.data = require('./lib/loadfile')
 
     // 创建main窗口
-    createMainWindow()
+    createListWindow()
 
     // 创建打开状态item窗口
     global.data.data.items.forEach(item => {
@@ -136,9 +128,9 @@ ipcMain.on('update-items', () => {
 
 // 打开主窗口
 ipcMain.on('show-main', () => {
-    if( mainWindow) {
+    if (mainWindow) {
         mainWindow.reload()
     } else {
-        createMainWindow()
+        createListWindow()
     }
 })
