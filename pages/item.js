@@ -26,31 +26,10 @@ userComand.addEventListener("click", (event) => {
             mainProcess.createItemWindow()
             break;
         case "del":
-            if (item == undefined) {
-                currnetWindow.close()
-            } else {
-
-
-                // 文件路径
-                let itemPath = path.join('./data/items/', item.id + '.json')
-                // fs.unlinkSync(itemPath)
-
-                // 异步处理删除文件操作，删除成功后关闭窗口，更新全局数据
-                fs.unlink(itemPath, (err) => {
-                    if (err) throw err
-                    // 获取最新全局数据，删除本次的对象，然后更新全局数据后关闭本窗口
-                    items = remote.getGlobal('data').data.items
-                    for (let index = 0; index < items.length; index++) {
-                        const item = items[index];
-                        if (item.id == itemId) {
-                            items.splice(index, 1)
-                        }
-                    }
-                    remote.getGlobal('data').data.items = items
-                    ipcRenderer.send('update-items')
-                    currnetWindow.close()
-                })
-            }
+            delItem()
+            break;
+        case "menu":
+            ipcRenderer.send('show-main')
             break;
         default:
             break;
@@ -74,11 +53,11 @@ content_dt.addEventListener("change", saveCotent)
 
 // 定义数据保存函数
 function saveCotent() {
-    
+
     // if (content.value == "" && content_dt.value == "") {
     //     break;
     // }
-    
+
     // id初始赋值
     if (item == undefined) {
         item = {
@@ -115,4 +94,30 @@ function saveCotent() {
 
     // 发送数据更新指令
     ipcRenderer.send('update-items')
+}
+
+function delItem() {
+    if (item == undefined) {
+        currnetWindow.close()
+    } else {
+        // 文件路径
+        let itemPath = path.join('./data/items/', item.id + '.json')
+        // fs.unlinkSync(itemPath)
+
+        // 异步处理删除文件操作，删除成功后关闭窗口，更新全局数据
+        fs.unlink(itemPath, (err) => {
+            if (err) throw err
+            // 获取最新全局数据，删除本次的对象，然后更新全局数据后关闭本窗口
+            items = remote.getGlobal('data').data.items
+            for (let index = 0; index < items.length; index++) {
+                const item = items[index];
+                if (item.id == itemId) {
+                    items.splice(index, 1)
+                }
+            }
+            remote.getGlobal('data').data.items = items
+            ipcRenderer.send('update-items')
+            currnetWindow.close()
+        })
+    }
 }

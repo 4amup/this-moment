@@ -45,10 +45,9 @@ const createLoadWindow = exports.createLoadWindow = () => {
 
 // 创建main窗口
 function createMainWindow() {
-    // const mainWindow = new BrowserWindow({
     mainWindow = new BrowserWindow({
-        width: 800,
-        height: 800,
+        width: 400,
+        height: 500,
         frame: false,
         webPreferences: {
             nodeIntegration: true
@@ -56,7 +55,7 @@ function createMainWindow() {
     })
     mainWindow.setMenu(null)
     mainWindow.loadFile('index.html')
-    mainWindow.webContents.openDevTools()
+    // mainWindow.webContents.openDevTools()
     mainWindow.on('closed', () => {
         mainWindow = null
     })
@@ -64,7 +63,7 @@ function createMainWindow() {
 
 // 创建item窗口
 const createItemWindow = exports.createItemWindow = (itemId) => {
-    const itemWindow = new BrowserWindow({
+    let itemWindow = new BrowserWindow({
         width: 400,
         height: 600,
         frame: false,
@@ -88,7 +87,7 @@ const createItemWindow = exports.createItemWindow = (itemId) => {
     })
 
     itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
-    itemWindow.webContents.openDevTools()
+    // itemWindow.webContents.openDevTools()
     return itemWindow
 }
 
@@ -133,4 +132,13 @@ ipcMain.on('load-data', (event) => {
 // item窗口更新完毕后，更新主进程数据
 ipcMain.on('update-items', () => {
     if (mainWindow) mainWindow.reload()
+})
+
+// 打开主窗口
+ipcMain.on('show-main', () => {
+    if( mainWindow) {
+        mainWindow.reload()
+    } else {
+        createMainWindow()
+    }
 })
