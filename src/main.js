@@ -2,7 +2,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const fs = require('fs')
 
-// 数据对象data，初始化时为空，在加载完mainWindow后，此对象被赋值
+// 数据对象data，初始化时为空，在加载完listWindow后，此对象被赋值
 global.data = {
     data: null
 }
@@ -56,7 +56,8 @@ function createListWindow() {
 }
 
 // 创建item窗口
-const createItemWindow = exports.createItemWindow = (itemId) => {
+// const createItemWindow = exports.createItemWindow = (itemId) => {
+const createItemWindow = exports.createItemWindow = (item) => {
     let itemWindow = new BrowserWindow({
         width: 400,
         height: 600,
@@ -67,13 +68,13 @@ const createItemWindow = exports.createItemWindow = (itemId) => {
     })
 
     // 将数据id传递给窗口
-    itemWindow.itemId = itemId
+    if (item) itemWindow.itemId = item.id
     itemWindow.setMenu(null)
     itemWindow.loadURL(`file://${__dirname}/windows/views/item.html`)
 
     itemWindow.once('ready-to-show', () => {
         itemWindow.show();
-    });
+    })
 
     itemWindow.on('closed', () => {
         itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
@@ -83,12 +84,6 @@ const createItemWindow = exports.createItemWindow = (itemId) => {
     itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
     itemWindow.webContents.openDevTools()
     return itemWindow
-}
-
-// 打开item窗口对应文件，并将数据发送到对象item窗口
-const openItemFile = exports.openItemFile = (targetWindow, file) => {
-    const content = fs.readFileSync(file).toString();
-    targetWindow.webContents.send('file-opened', file, content); // 将文件的内容发送到提供的浏览器窗口
 }
 
 // app准备好之后，加载载入文件窗口
@@ -113,9 +108,13 @@ ipcMain.on('load-data', (event) => {
     createListWindow()
 
     // 创建打开状态item窗口
-    global.data.data.items.forEach(item => {
-        createItemWindow(item.id)
-    });
+    let items = global.data.data.items.filter((item) => {
+        return item.open == true
+    })
+
+    items.forEach(item => {
+        createItemWindow(item)
+    })
 
     // 发送消息，关闭数据载入窗口
     event.sender.send('load-end')
@@ -123,13 +122,13 @@ ipcMain.on('load-data', (event) => {
 
 // item窗口更新完毕后，更新主进程数据
 ipcMain.on('update-items', () => {
-    if (mainWindow) mainWindow.reload()
+    if (listWindow) listWindow.reload()
 })
 
 // 打开主窗口
 ipcMain.on('show-main', () => {
-    if (mainWindow) {
-        mainWindow.reload()
+    if (listWindow) {
+        listWindow.reload()
     } else {
         createListWindow()
     }

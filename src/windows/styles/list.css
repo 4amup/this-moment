@@ -1,6 +1,7 @@
 /* 无边框需要拖动的hack写法 */
 body {
-    -webkit-app-region: drag
+    -webkit-app-region: drag;
+    background-color: grey;
 }
 button, input {
     -webkit-app-region: no-drag

@@ -28,7 +28,7 @@ list_element.innerText = `加载中...`
 let start = Date.now()
 // let data = remote.require('./loadfile.js')
 // remote.getGlobal('data').data = data //update 主进程data全局变量
-let data = remote.getGlobal('data').data
+let items = remote.getGlobal('data').data.items
 let end = Date.now()
 let timer = end - start
 
@@ -37,11 +37,11 @@ let timer = end - start
 
 // 加载完毕，清掉之前的等待状态，切换为根据结果构建的list列表
 list_element.innerText = null
-data.items.forEach((item, index) => {
+items.forEach((item, index) => {
     let div = document.createElement("div")
     div.id = item.id
     div.className = "item"
-    div.innerText = item.content
+    div.innerText = item.content + item.open
     list_element.appendChild(div)
 })
 
@@ -53,8 +53,16 @@ list_element.appendChild(message)
 
 // 加载完毕后为每个item绑定事件监听器：双击显示
 list_element.addEventListener("dblclick", (event) => {
-    let item = event.target
-    if (item.className == "item") {
-        mainProcess.createItemWindow(item.id)
+    let item_element = event.target
+    let item = items.find(item => {
+        return item.id == item_element.id
+    })
+    let itemIndex = items.findIndex((item, index)=> {
+        return item.id == item_element.id
+    })
+    if (item_element.className == "item" && item.open == false) {
+        mainProcess.createItemWindow(item)
     }
+
+    remote.getGlobal('data').data.items[itemIndex] = item
 })

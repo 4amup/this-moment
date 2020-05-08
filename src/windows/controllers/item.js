@@ -11,6 +11,9 @@ let items = remote.getGlobal('data').data.items
 let item = items.find(item => {
     return item.id == itemId
 })
+let itemIndex = items.findIndex((item, index) => {
+    return item.id == itemId
+})
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')
@@ -20,6 +23,9 @@ userComand.addEventListener("click", (event) => {
     // 将主窗口控制指令传输到mainProcess
     switch (button.id) {
         case "exit":
+            item.open = false
+            items[itemIndex] = item
+            remote.getGlobal('data').data.items = items
             currnetWindow.close()
             break;
         case "add":
@@ -71,17 +77,18 @@ function saveCotent() {
     item.update_dt = Date.now()
     item.content = content.value
     item.content_dt = content_dt.value
+    item.open = true
 
     // db save
-    let itemPath = path.join('./data/items/', item.id + '.json')
+    let itemPath = path.join(__dirname,'../../userdata/items/', item.id + '.json')
     fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
         if (err) throw err
         console.log(item.id + "is saved")
     });
 
     // 数据更新到主线程的数据中，add或者update
-    let index = items.findIndex((value, index, item) => {
-        return value.id == itemId
+    let index = items.findIndex((item, index) => {
+        return item.id == itemId
     })
 
     if (index == -1) {
