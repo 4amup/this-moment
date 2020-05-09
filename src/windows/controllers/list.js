@@ -1,5 +1,7 @@
-const { remote } = require('electron')
+const { remote, ipcRenderer } = require('electron')
 const mainProcess = remote.require('./main.js')
+const fs = require('fs')
+const path = require('path')
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')
@@ -37,13 +39,19 @@ let timer = end - start
 
 // 加载完毕，清掉之前的等待状态，切换为根据结果构建的list列表
 list_element.innerText = null
-items.forEach((item, index) => {
+if (items == undefined) {
     let div = document.createElement("div")
-    div.id = item.id
-    div.className = "item"
-    div.innerText = item.content + item.open
-    list_element.appendChild(div)
-})
+        div.innerText = '写点你的人生海浪吧！'
+        list_element.appendChild(div)
+} else {
+    items.forEach((item, index) => {
+        let div = document.createElement("div")
+        div.id = item.id
+        div.className = "item"
+        div.innerText = item.content + item.open
+        list_element.appendChild(div)
+    })
+}
 
 // 追加载入时间信息
 const message = document.createElement("span")
@@ -54,15 +62,32 @@ list_element.appendChild(message)
 // 加载完毕后为每个item绑定事件监听器：双击显示
 list_element.addEventListener("dblclick", (event) => {
     let item_element = event.target
+
+    // 找对象和index
     let item = items.find(item => {
         return item.id == item_element.id
     })
-    let itemIndex = items.findIndex((item, index)=> {
+    let itemIndex = items.findIndex((item, index) => {
         return item.id == item_element.id
     })
-    if (item_element.className == "item" && item.open == false) {
-        mainProcess.createItemWindow(item)
+
+    // 绑定事件过滤
+    if (item_element.className != "item") {
+        return
     }
 
-    remote.getGlobal('data').data.items[itemIndex] = item
+    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口
+    if (item.open == false) {
+        let itemPath = path.join('./data/', item.id + '.json')
+        item.open = true
+        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
+            if (err) throw err
+            // 更新主进程数据对象
+            remote.getGlobal('data').data.items[itemIndex] = item
+            mainProcess.createItemWindow(item)
+            console.log(item.id + "is saved")
+            // 发送数据更新指令
+            ipcRenderer.send('update-items')
+        })
+    }
 })

@@ -20,13 +20,15 @@ let data = JSON.parse(data_json)
 let items_file_name = fs.readdirSync(items_path)
 
 // 遍历读取items文件内容并放入items数组中
-data.items = []
-items_file_name.forEach((value, index) => {
-    let item_path = path.join(items_path, value)
-    let item_json = fs.readFileSync(item_path, 'utf8')
-    let item = JSON.parse(item_json)
-    data.items[index] = item
-})
+if (items_file_name != "") {    
+    data.items = []
+    items_file_name.forEach((value, index) => {
+        let item_path = path.join(items_path, value)
+        let item_json = fs.readFileSync(item_path, 'utf8')
+        let item = JSON.parse(item_json)
+        data.items[index] = item
+    })
+}
 
 // 导出一个对象，CommonJS规范
 // 后续目标，导出一个对象类，可以直接使用的

@@ -107,14 +107,18 @@ ipcMain.on('load-data', (event) => {
     // 创建main窗口
     createListWindow()
 
-    // 创建打开状态item窗口
-    let items = global.data.data.items.filter((item) => {
-        return item.open == true
-    })
+    let items = global.data.data.items
 
-    items.forEach(item => {
-        createItemWindow(item)
-    })
+    // 创建打开状态item窗口
+    if (items !== undefined) {
+        items = items.filter((item) => {
+            return item.open == true
+        })
+
+        items.forEach(item => {
+            createItemWindow(item)
+        })
+    }
 
     // 发送消息，关闭数据载入窗口
     event.sender.send('load-end')
@@ -128,7 +132,7 @@ ipcMain.on('update-items', () => {
 // 打开主窗口
 ipcMain.on('show-main', () => {
     if (listWindow) {
-        listWindow.reload()
+        listWindow.focus()
     } else {
         createListWindow()
     }
