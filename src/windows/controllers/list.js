@@ -2,6 +2,9 @@ const { remote, ipcRenderer } = require('electron')
 const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
+const currnetWindow = remote.getCurrentWindow()
+
+let item = null
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')
@@ -11,7 +14,7 @@ userComand.addEventListener("click", (event) => {
     // 将主窗口控制指令传输到mainProcess
     switch (button.id) {
         case "exit":
-            remote.getCurrentWindow().close()
+            currnetWindow.close()
             break;
         case "add":
             mainProcess.createItemWindow()
@@ -26,16 +29,11 @@ userComand.addEventListener("click", (event) => {
 const list_element = document.getElementById('list')
 list_element.innerText = `加载中...`
 
-// 导入数据
+// 读取数据
 let start = Date.now()
-// let data = remote.require('./loadfile.js')
-// remote.getGlobal('data').data = data //update 主进程data全局变量
-let items = remote.getGlobal('data').data.items
+let items = readMainItems(currnetWindow, item)
 let end = Date.now()
 let timer = end - start
-
-// // 加载完毕，向主进程发送消息
-// ipcRenderer.send('load-data', data.items)
 
 // 加载完毕，清掉之前的等待状态，切换为根据结果构建的list列表
 list_element.innerText = null
@@ -64,15 +62,15 @@ list_element.addEventListener("dblclick", (event) => {
     let item_element = event.target
 
     // 找对象和index
-    let item = items.find(item => {
-        return item.id == item_element.id
-    })
-    let itemIndex = items.findIndex((item, index) => {
-        return item.id == item_element.id
-    })
+    let item = {
+        id: item_element.id
+    }
+
+    // 读取最新对象
+    readMainItems(item)
 
     // 绑定事件过滤
-    if (item_element.className != "item") {
+    if (item_element.className !== "item") {
         return
     }
 
@@ -91,3 +89,17 @@ list_element.addEventListener("dblclick", (event) => {
         })
     }
 })
+
+// 从主进程实时读取最新的item数据对象
+function readMainItems(item) {
+    let items = remote.getGlobal('data').data.items
+    if (items !== null) {
+        item = items.find(item => {
+            return item.id == item.id
+        })
+        item.index = items.findIndex((item, index) => {
+            return item.id == item.id
+        })
+    }
+    return items
+}
