@@ -40,8 +40,8 @@ const createLoadWindow = exports.createLoadWindow = () => {
 // 创建main窗口
 function createListWindow() {
     listWindow = new BrowserWindow({
-        width: 400,
-        height: 500,
+        width: 800,
+        height: 800,
         frame: false,
         webPreferences: {
             nodeIntegration: true
@@ -59,7 +59,7 @@ function createListWindow() {
 // const createItemWindow = exports.createItemWindow = (itemId) => {
 const createItemWindow = exports.createItemWindow = (item) => {
     let itemWindow = new BrowserWindow({
-        width: 400,
+        width: 500,
         height: 600,
         frame: false,
         webPreferences: {

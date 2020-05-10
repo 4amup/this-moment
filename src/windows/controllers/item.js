@@ -3,21 +3,22 @@ const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
 const currnetWindow = remote.getCurrentWindow()
+const updateItems  = require('../../lib/updateItems.js')
 
-let item = null
-readMainItems(currnetWindow, item)
+// 根据窗口id读取对应的item数据对象
+let item = readMainItem()
+
 // 从主进程实时读取最新的item数据对象
-function readMainItems(currnetWindow, item) {
+function readMainItem(item) {
     let items = remote.getGlobal('data').data.items
     if (items !== null) {
         item = items.find(item => {
             return item.id == currnetWindow.itemId
         })
-        item.index = items.findIndex((item, index) => {
-            return item.id == currnetWindow.itemId
-        })
+    } else {
+        item = null
     }
-    return items
+    return item
 }
 
 // user-comand区域事件监听
@@ -45,11 +46,10 @@ userComand.addEventListener("click", (event) => {
 
 })
 
+// item->view
 let content = document.getElementById("content")
 let content_dt = document.getElementById("content-dt")
-
-// 初始赋值
-if (item !== null) {
+if (item) {
     content.value = item.content
     content_dt.value = item.content_dt
 }
@@ -58,7 +58,7 @@ if (item !== null) {
 content.addEventListener("change", saveCotent)
 content_dt.addEventListener("change", saveCotent)
 
-// 定义数据保存函数
+// 函数功能，将item进行持久化保存
 function saveCotent() {
     // id初始赋值
     if (item == null) {
@@ -66,10 +66,10 @@ function saveCotent() {
             id: Date.now(),
             create_dt: Date.now(),
         }
-        itemId = item.id
+        currnetWindow.itemId = item.id //更新窗口itemId
     }
 
-    // 数据更新
+    // item字段更新
     item.update_dt = Date.now()
     item.content = content.value
     item.content_dt = content_dt.value
@@ -79,45 +79,22 @@ function saveCotent() {
     let itemPath = path.join('./data', item.id + '.json')
     fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
         if (err) throw err
+        updateItems(item, "update")
         console.log(item.id + "is saved")
     })
-
-    // 读取最新数据
-    let items = readMainItems(item, currnetWindow)
-
-    // 数据更新到主线程的数据中，add或者update
-    if (item.index == -1) {
-        items.push(item)
-        item.index = items.length++
-    } else {
-        items[item.index] = item
-    }
-
-    // 发送数据更新指令
-    ipcRenderer.send('update-items')
 }
 
 // 异步删除文件，删除文件成功后，主进程数据数据对象
 function delItem(item) {
-    if (item == undefined) {
+    if (item == null) {
         currnetWindow.close()
     } else {
         // 文件路径
         let itemPath = path.join('./data/', item.id + '.json')
-
         // 异步处理删除文件操作，删除成功后关闭窗口，更新全局数据
         fs.unlink(itemPath, (err) => {
             if (err) throw err
-            // 获取最新全局数据，删除本次的对象，然后更新全局数据后关闭本窗口
-            items = remote.getGlobal('data').data.items
-            for (let index = 0; index < items.length; index++) {
-                const item = items[index];
-                if (item.id == itemId) {
-                    items.splice(index, 1)
-                }
-            }
-            remote.getGlobal('data').data.items = items
-            ipcRenderer.send('update-items')
+            updateItems(item, "delete")
             currnetWindow.close()
         })
     }
@@ -125,7 +102,7 @@ function delItem(item) {
 
 // 退出窗口，open属性改为false，更新主进程数据数据对象
 function exitItem(item) {
-    if (item == undefined) {
+    if (item == null) {
         currnetWindow.close()
     } else {
         // 文件路径
@@ -136,26 +113,10 @@ function exitItem(item) {
 
         fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
             if (err) throw err
-            console.log(item.id + "is saved")
+            updateItems(item, "update")
+            currnetWindow.close()// 关闭窗口
         });
 
-        // 数据更新到主线程的数据中，add或者update
-        let index = items.findIndex((item, index) => {
-            return item.id == itemId
-        })
 
-        if (index == -1) {
-            items.push(item)
-        } else {
-            items[index] = item
-        }
-
-        remote.getGlobal('data').data.items = items
-
-        // 发送数据更新指令
-        ipcRenderer.send('update-items')
-
-        // 关闭窗口
-        currnetWindow.close()
     }
 }
