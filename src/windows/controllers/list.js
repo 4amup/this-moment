@@ -3,7 +3,7 @@ const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
 const currnetWindow = remote.getCurrentWindow()
-const updateItems  = require('../../lib/updateItems.js')
+const updateItems = require('../../lib/updateItems.js')
 
 // user-comand区域事件监听
 let userComand = document.getElementById('user-command')
@@ -78,8 +78,7 @@ function contentRender(data) {
             let div = document.createElement("div")
             div.id = item.id
             div.className = "item"
-            // div.innerText = "序号" + index + ". " + item.content + item.open
-            div.innerText = `序号${index}. ${item.content} ${item.open}`
+            div.innerText = `序号${index + 1}. ${item.content} ${item.open}`
             list_element.appendChild(div)
         })
     }
