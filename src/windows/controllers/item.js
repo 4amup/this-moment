@@ -55,8 +55,8 @@ if (item) {
 }
 
 // 内容改变事件监听，自动保存
-content.addEventListener("change", saveCotent)
-content_dt.addEventListener("change", saveCotent)
+content.addEventListener("input", saveCotent)
+content_dt.addEventListener("input", saveCotent)
 
 // 函数功能，将item进行持久化保存
 function saveCotent() {

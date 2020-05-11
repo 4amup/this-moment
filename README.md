@@ -14,6 +14,7 @@
 - [ ] 开机自启动
 - [X] 设置页面功能
 - [X] 按照windows sticky的逻辑实现
+- [X] list页面的search+高亮功能实现
 - [ ] 思考model和view的同步问题
 - [ ] 思考数据和model的映射问题
 - [ ] 置顶功能
