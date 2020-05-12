@@ -1,27 +1,23 @@
+// CONST 变量
 const { remote, ipcRenderer } = require('electron')
 const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
 const currnetWindow = remote.getCurrentWindow()
-const updateItems  = require('../../lib/updateItems.js')
+const updateItems = require('../../lib/updateItems.js')
 
-// 根据窗口id读取对应的item数据对象
-let item = readMainItem()
+// 全局变量
+let item = currnetWindow.item//根据窗口id读取对应的item数据对象
+let content = document.getElementById('content')//内容-事件
+let content_dt = document.getElementById('content-dt')//内容-时间
 
-// 从主进程实时读取最新的item数据对象
-function readMainItem(item) {
-    let items = remote.getGlobal('data').data.items
-    if (items !== null) {
-        item = items.find(item => {
-            return item.id == currnetWindow.itemId
-        })
-    } else {
-        item = null
-    }
-    return item
+// 根据数据对象item->view
+if (item) {
+    content.value = item.content
+    content_dt.value = item.content_dt
 }
 
-// user-comand区域事件监听
+//----------------------------user-comand区域事件监听---------------------------------------
 let userComand = document.getElementById('user-command')
 userComand.addEventListener("click", (event) => {
     let button = event.target
@@ -46,17 +42,11 @@ userComand.addEventListener("click", (event) => {
 
 })
 
-// item->view
-let content = document.getElementById("content")
-let content_dt = document.getElementById("content-dt")
-if (item) {
-    content.value = item.content
-    content_dt.value = item.content_dt
-}
-
-// 内容改变事件监听，自动保存
+// 自动保存：监听输入时自动保存
 content.addEventListener("input", saveCotent)
 content_dt.addEventListener("input", saveCotent)
+
+//--------------------------------函数功能区-----------------------------------
 
 // 函数功能，将item进行持久化保存
 function saveCotent() {
@@ -66,7 +56,8 @@ function saveCotent() {
             id: Date.now(),
             create_dt: Date.now(),
         }
-        currnetWindow.itemId = item.id //更新窗口itemId
+        // currnetWindow.itemId = item.id //更新窗口id
+        currnetWindow.item.id = item.id //更新窗口id
     }
 
     // item字段更新

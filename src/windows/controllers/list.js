@@ -1,19 +1,34 @@
 const { remote, ipcRenderer } = require('electron')
+const Menu = remote.Menu
+const MenuItem = remote.MenuItem
 const mainProcess = remote.require('./main.js')
 const fs = require('fs')
 const path = require('path')
-const currnetWindow = remote.getCurrentWindow()
+const currentWindow = remote.getCurrentWindow()
 const updateItems = require('../../lib/updateItems.js')
 
-// user-comand区域事件监听
+let data = remote.getGlobal('data').data
+let itemWindows = remote.getGlobal('data').itemWindows
 let userComand = document.getElementById('user-command')
+let listElement = document.getElementById('list')
+let searchElement = document.getElementById('search')
+let menu = new Menu()//创建右键菜单
+let item = null//当前操作的item
+menu.append(new MenuItem({ label: 'open', click: openItemWindow }))
+menu.append(new MenuItem({ label: 'close' }))
+menu.append(new MenuItem({ label: 'delte' }))
+
+// 根据数据渲染list列表
+contentRender(data.items)
+
+// user-comand区域事件监听
 userComand.addEventListener("click", (event) => {
     let button = event.target
     console.log(button.id)
     // 将主窗口控制指令传输到mainProcess
     switch (button.id) {
-        case "exit":
-            currnetWindow.close()
+        case "close":
+            currentWindow.close()
             break;
         case "add":
             mainProcess.createItemWindow()
@@ -21,49 +36,15 @@ userComand.addEventListener("click", (event) => {
         default:
             break;
     }
-
 })
 
-// 页面加载的三个阶段：1.list列表动态图转圈；2.node.js读取文件后转化为对象；3.渲染list，插入HTML文件中
-const listElement = document.getElementById('list')
-listElement.innerText = `加载中...`
-
-// 读取数据
-let data = readMainData()
-
-// 加载完毕，清掉之前的等待状态，切换为根据结果构建的list列表
-contentRender(data.items)
-
-// 加载完毕后为每个item绑定事件监听器：双击显示
-listElement.addEventListener("dblclick", (event) => {
-    // 非item的事件，直接过滤
-    if (event.target.className !== "item") {
-        return
-    }
-
-    // 读取当前双击item的数据对象
-    let item = data.items.find(value => {
-        return value.id == event.target.id
-    })
-
-    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口->控制台打印信息
-    if (item.open == false) {
-        let itemPath = path.join('./data/', item.id + '.json')
-        item.open = true
-        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
-            if (err) throw err
-            updateItems(item, "update")
-            mainProcess.createItemWindow(item)
-            console.log(item.id + "is saved")
-        })
-    } else {
-        // focus这个item窗口
-    }
-})
-
+// listElement.addEventListener("dblclick", openItemWindow)// item双击open
+listElement.addEventListener("dblclick", handleDoubleClick)// item双击open
+listElement.addEventListener("contextmenu", contentMenu)// item右键菜单open close del
 // search功能按照keyup绑定事件，触发查询操作，高亮查询内容，并过滤
-const searchElement = document.getElementById('search')
 searchElement.addEventListener("input", matchItems)
+
+// 函数功能区
 
 // 函数功能：根据输入内容，查找复合要求的内容，高亮匹配词，重新渲染界面
 function matchItems(event) {
@@ -83,12 +64,6 @@ function matchItems(event) {
     contentRender(matchItems, keyWord)
 }
 
-
-// 函数功能：从主进程读取最新的data数据对象
-function readMainData() {
-    return remote.getGlobal('data').data
-}
-
 // 负责根据主进程的data，渲染list列表
 function contentRender(items) {
     listElement.innerText = null
@@ -104,6 +79,46 @@ function contentRender(items) {
             div.innerText = `序号${index + 1}. ${item.content} ${item.open}`
             listElement.appendChild(div)
         })
+    }
+}
+
+function handleDoubleClick(event) {
+    if (event.target.className !== "item") {
+        return
+    }
+
+    // 读取当前双击item的数据对象
+    item = data.items.find(value => {
+        return value.id == event.target.id
+    })
+
+    // 打开窗口
+    ipcRenderer.send('open-item-window',item)
+    // openItemWindow()
+}
+
+// 打开item窗口函数
+function openItemWindow() {
+    if (!item) return
+    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口->控制台打印信息
+    if (item.open == false) {
+        let itemPath = path.join('./data/', item.id + '.json')
+        item.open = true
+        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
+            if (err) throw err
+            updateItems(item, "update")
+            mainProcess.createItemWindow(item)
+            console.log(item.id + "is saved")
+        })
+    } else {// focus这个item窗口
+
+        let itemWindow = null
+        itemWindows.forEach(value => {
+            if (value.item.id === item.id) {
+                itemWindow = value
+            }
+        })
+        if (itemWindow) itemWindow.focus()
     }
 }
 
@@ -126,4 +141,28 @@ function contentRender(items, keyWord) {
             listElement.appendChild(div)
         })
     }
+}
+
+// item右键单击事件
+function contentMenu(event) {
+    event.preventDefault()
+    // 非item的事件，不触发
+    if (event.target.className !== "item") {
+        return
+    }
+
+    // 读取当前双击item的数据对象
+    item = data.items.find(value => {
+        return value.id == event.target.id
+    })
+
+    // 动态改变menu项目
+    if (item.open) {
+        menu.items[0].visible = false
+        menu.items[1].visible = true
+    } else {
+        menu.items[0].visible = true
+        menu.items[1].visible = false
+    }
+    menu.popup(currentWindow)
 }

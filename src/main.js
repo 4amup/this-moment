@@ -4,13 +4,14 @@ const fs = require('fs')
 
 // 数据对象data，初始化时为空，在加载完listWindow后，此对象被赋值
 global.data = {
-    data: null
+    data: null,
+    itemWindows: new Set()
 }
 
 // 窗口引用
 let loadWindow = null
 let listWindow = null
-let itemWindows = new Set()
+// let itemWindows = new Set()
 
 // 创建数据载入窗口
 const createLoadWindow = exports.createLoadWindow = () => {
@@ -68,7 +69,8 @@ const createItemWindow = exports.createItemWindow = (item) => {
     })
 
     // 将数据id传递给窗口
-    if (item) itemWindow.itemId = item.id
+    // if (item) itemWindow.itemId = item.id
+    itemWindow.item = item
     itemWindow.setMenu(null)
     itemWindow.loadURL(`file://${__dirname}/windows/views/item.html`)
 
@@ -77,11 +79,13 @@ const createItemWindow = exports.createItemWindow = (item) => {
     })
 
     itemWindow.on('closed', () => {
-        itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
+        // itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
+        global.data.itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
         itemWindow = null
     })
 
-    itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
+    // itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
+    global.data.itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
     itemWindow.webContents.openDevTools()
     return itemWindow
 }
@@ -110,7 +114,7 @@ ipcMain.on('load-data', (event) => {
     let items = global.data.data.items
 
     // 创建打开状态item窗口
-    if (items !== undefined) {
+    if (items) {
         items = items.filter((item) => {
             return item.open == true
         })
@@ -137,3 +141,29 @@ ipcMain.on('show-main', () => {
         createListWindow()
     }
 })
+
+ipcMain.on('open-item-window', openItemWindow)
+
+function openItemWindow(event, item) {
+    if (!item) return
+    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口->控制台打印信息
+    if (item.open == false) {
+        let itemPath = path.join('./data/', item.id + '.json')
+        item.open = true
+        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
+            if (err) throw err
+            updateItems(item, "update")
+            mainProcess.createItemWindow(item)
+            console.log(item.id + "is saved")
+        })
+    } else {// focus这个item窗口
+
+        let itemWindow = null
+        global.data.itemWindows.forEach(value => {
+            if (value.item.id === item.id) {
+                itemWindow = value
+            }
+        })
+        if (itemWindow) itemWindow.focus()
+    }
+}

@@ -15,7 +15,9 @@
 - [X] 设置页面功能
 - [X] 按照windows sticky的逻辑实现
 - [X] list页面的search+高亮功能实现
-- [ ] 思考model和view的同步问题
+- [X] 思考model和view的同步问题，和数据相关全部放到主进程管理
+- [X] handle考虑全部放到main进程管理处，itemWindow的focus和打开已经放到主进程管理了
+- [X] 实现了右键菜单的动态生成，未实现关闭和删除功能
 - [ ] 思考数据和model的映射问题
 - [ ] 置顶功能
 - [ ] css美化
