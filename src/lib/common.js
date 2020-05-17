@@ -21,8 +21,8 @@ class Common {
         height: 600,
     };
     static WINDOW_SIZE_ITEM = {
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 400,
     };
     static WINDOW_URL = {
         // load: `file://${__dirname}/windows/views/load.html`,

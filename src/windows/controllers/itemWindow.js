@@ -2,14 +2,9 @@ const path = require('path')
 const { BrowserWindow } = require('electron')
 const Common = require('../../lib/common')
 
-class ListWindow {
-    constructor(id) {
-        this.createWindow();
-        this.id = id;
-    }
-   
-    createWindow() {
-        this.ItemWindow = new BrowserWindow({
+class ItemWindow extends BrowserWindow {
+    constructor(item) {
+        super({
             title: Common.LIFE_OCEAN,
             icon: path.join(__dirname, '../../../assets/icon.png'),
             frame: false,
@@ -19,10 +14,10 @@ class ListWindow {
             webPreferences: {
                 nodeIntegration: true,
             },
-            
         });
+        this.item = item;
         this.setMenu(null);
-        this.loadURL(Common.WINDOW_URL.list);
+        this.loadURL(Common.WINDOW_URL.item);
         if (Common.DEBUG_MODE) this.webContents.openDevTools();
     }
 }

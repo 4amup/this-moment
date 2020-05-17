@@ -9,6 +9,7 @@ const updateItems = require('../../lib/updateItems.js')
 
 // 读取全局数据
 let setting = remote.getGlobal('setting');
+let item = null;//当前操作的item引用
 let items = remote.getGlobal('items');
 
 let userComand = document.getElementById('user-command')
@@ -32,7 +33,7 @@ userComand.addEventListener("click", (event) => {
             currentWindow.close()
             break;
         case "add":
-            mainProcess.createItemWindow()
+            ipcRenderer.send('add-item', null);
             break;
         default:
             break;
@@ -85,17 +86,11 @@ function contentRender(items) {
 
 function handleDoubleClick(event) {
     if (event.target.className !== "item") {
-        return
+        return;
     }
-
-    // 读取当前双击item的数据对象
-    item = data.items.find(value => {
-        return value.id == event.target.id
-    })
-
-    // 打开窗口
-    ipcRenderer.send('open-item-window',item)
-    // openItemWindow()
+    // 找到当前双击的item
+    findItemById(event.target.id);
+    ipcRenderer.send('add-item', item);
 }
 
 // 打开item窗口函数
@@ -153,9 +148,7 @@ function contentMenu(event) {
     }
 
     // 读取当前双击item的数据对象
-    item = data.items.find(value => {
-        return value.id == event.target.id
-    })
+    findItemById(event.target.id);
 
     // 动态改变menu项目
     if (item.open) {
@@ -166,4 +159,11 @@ function contentMenu(event) {
         menu.items[1].visible = false
     }
     menu.popup(currentWindow)
+}
+
+// 根据id查找当前正在操作的item，并返回引用
+function findItemById(id) {
+    item = items.find(value => {
+        return value.id == id;
+    });
 }
