@@ -1,169 +1,113 @@
-// Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require('electron')
-const fs = require('fs')
+const { app, ipcMain } = require('electron');
+const {settingDB, itemDB} = require('./lib/database')
+const common = require('./lib/common');
+const global = require('./lib/global');
 
-// 数据对象data，初始化时为空，在加载完listWindow后，此对象被赋值
-global.data = {
-    data: null,
-    itemWindows: new Set()
-}
+const LoadWindow = require('./windows/controllers/loadWindow.js')
+const ListWindow = require('./windows/controllers/listWindow.js')
+// const ItemWindow = require('./windows/controllers/itemWindow.js')
 
-// 窗口引用
-let loadWindow = null
-let listWindow = null
-// let itemWindows = new Set()
+class App {
+    constructor() {
+        // 窗口管理
+        this.loadWindow = null;
+        this.listWindow = null;
+        this.itemWindows = new Set();
+    }
 
-// 创建数据载入窗口
-const createLoadWindow = exports.createLoadWindow = () => {
-    loadWindow = new BrowserWindow({
-        width: 200,
-        height: 200,
-        webPreferences: {
-            nodeIntegration: true,
-            // webSecurity: false
-        },
-    })
+    init() {
+        if (this.CheckInstance()) {
+            this.initApp();
+            this.initIpc();
+        } else {
 
-    loadWindow.loadURL(`file://${__dirname}/windows/views/load.html`)
-
-    loadWindow.once('ready-to-show', () => {
-        loadWindow.show()
-    })
-
-    // 窗口关闭事件
-    loadWindow.on('closed', () => {
-        loadWindow = null
-    })
-
-    loadWindow.webContents.openDevTools()
-}
-
-// 创建main窗口
-function createListWindow() {
-    listWindow = new BrowserWindow({
-        width: 800,
-        height: 800,
-        frame: false,
-        webPreferences: {
-            nodeIntegration: true
         }
-    })
-    listWindow.setMenu(null)
-    listWindow.loadURL(`file://${__dirname}/windows/views/list.html`)
-    listWindow.webContents.openDevTools()
-    listWindow.on('closed', () => {
-        listWindow = null
-    })
-}
+    }
 
-// 创建item窗口
-// const createItemWindow = exports.createItemWindow = (itemId) => {
-const createItemWindow = exports.createItemWindow = (item) => {
-    let itemWindow = new BrowserWindow({
-        width: 500,
-        height: 600,
-        frame: false,
-        webPreferences: {
-            nodeIntegration: true
-        }
-    })
+    CheckInstance() {
+        return true
+    }
 
-    // 将数据id传递给窗口
-    // if (item) itemWindow.itemId = item.id
-    itemWindow.item = item
-    itemWindow.setMenu(null)
-    itemWindow.loadURL(`file://${__dirname}/windows/views/item.html`)
+    initApp() {
+        app.on('ready', () => {
+            this.loadWindow = new LoadWindow();
+        });
+        app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') {
+                app.quit()
+            }
+        });
+    }
 
-    itemWindow.once('ready-to-show', () => {
-        itemWindow.show();
-    })
+    initIpc() {
+        ipcMain.on('load-data', event => {
+            // 本地数据库读取数据-同步
+            global.setting = settingDB.value();
+            global.items = itemDB.get('items').value();
 
-    itemWindow.on('closed', () => {
-        // itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
-        global.data.itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
-        itemWindow = null
-    })
+            // 逐一打开open状态的item窗口组
+            let openitems = global.items.filter((item) => {
+                return item.open == true;
+            });
 
-    // itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
-    global.data.itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
-    itemWindow.webContents.openDevTools()
-    return itemWindow
-}
+            openitems.forEach(item => {
+                this.createItemWindow(item.id)
+            })
 
-// app准备好之后，加载载入文件窗口
-app.whenReady().then(createLoadWindow)
+            // 打开list窗口，如目前没有open的item窗口组，则忽略list窗口状态，直接打开
+            if (openitems.length == 0) {
+                this.createListWindow();
+            } else if(this.setting.open) {
+                this.createListWindow();
+            }
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit()
-})
-
-app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-})
-
-
-// 根据主窗口异步消息，加载数据，加载数据完成后，创建main窗口
-ipcMain.on('load-data', (event) => {
-    // 同步开始载入文件
-    global.data.data = require('./lib/loadfile')
-
-    // 创建main窗口
-    createListWindow()
-
-    let items = global.data.data.items
-
-    // 创建打开状态item窗口
-    if (items) {
-        items = items.filter((item) => {
-            return item.open == true
-        })
-
-        items.forEach(item => {
-            createItemWindow(item)
+            // 读取完毕关闭数据载入窗口
+            this.loadWindow.loadWindow.close();
         })
     }
 
-    // 发送消息，关闭数据载入窗口
-    event.sender.send('load-end')
-})
-
-// item窗口更新完毕后，更新主进程数据
-ipcMain.on('update-items', () => {
-    if (listWindow) listWindow.reload()
-})
-
-// 打开主窗口
-ipcMain.on('show-main', () => {
-    if (listWindow) {
-        listWindow.focus()
-    } else {
-        createListWindow()
+    createLoadWindow() {
+        this.loadWindow = new LoadWindow()
     }
-})
 
-ipcMain.on('open-item-window', openItemWindow)
+    createListWindow() {
+        this.listWindow = new ListWindow()
+    }
 
-function openItemWindow(event, item) {
-    if (!item) return
-    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口->控制台打印信息
-    if (item.open == false) {
-        let itemPath = path.join('./data/', item.id + '.json')
-        item.open = true
-        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
-            if (err) throw err
-            updateItems(item, "update")
-            mainProcess.createItemWindow(item)
-            console.log(item.id + "is saved")
-        })
-    } else {// focus这个item窗口
+    createItemWindow() {
+        this.itemWindows.add(new ItemWindow())
+    }
 
-        let itemWindow = null
-        global.data.itemWindows.forEach(value => {
-            if (value.item.id === item.id) {
-                itemWindow = value
+    createItemWindow(id) {
+        let itemWindow = new BrowserWindow({
+            width: common.WINDOW_SIZE.item,
+            height: common.WINDOW_SIZE.item,
+            frame: false,
+            webPreferences: {
+                nodeIntegration: true
             }
         })
-        if (itemWindow) itemWindow.focus()
+    
+        // 将数据id传递给窗口
+        // if (item) itemWindow.itemId = item.id
+        itemWindow.id = id
+        itemWindow.setMenu(null)
+        itemWindow.loadURL(common.WINDOW_URL.item)
+    
+        itemWindow.once('ready-to-show', () => {
+            itemWindow.show();
+        })
+    
+        itemWindow.on('closed', () => {
+            // itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
+            this.itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
+            itemWindow = null
+        })
+    
+        this.itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
+        if (common.DEBUG_MODE) itemWindow.webContents.openDevTools();
+        return itemWindow
     }
 }
+
+new App().init()

@@ -12,5 +12,8 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^8.2.3"
+  },
+  "dependencies": {
+    "lowdb": "^1.0.0"
   }
 }

@@ -1,5 +1,5 @@
-# life-timer
-
+# 人生海海 有很多海浪 life-ocean wave 
+ 
 # 页面设计
 - 加载页面：实现数据的加载，数据结构是一个data对象，包含items数组
 - list：管理items的增删查
@@ -30,3 +30,34 @@
 - 多页面间共享数据，采取ipc通信方式，main存放一个全局数据，每次更新。
 - 加入close状态，开关item时候更新，一个是main窗口list列表需要更新，一个是每个item需要更新，初始化程序时按照状态显示item窗口
 - 如果item全没开，就必开main窗口的list，否则按照正常的close状态默认开启窗口
+
+# 备忘
+- 将loadWindow的标题栏和窗口统一颜色
+
+# 窗口管理
+
+## db设计
+1. setting全局设置，键值对储存；
+2. items储存数据；
+## setting，全局设置，键值对
+默认配置好，然后程序只更新
+
+## itemWindow操作集
+1. 打开新itemWindow
+2. 关闭当前itemWindow。关闭前检查：如有内容，则更新状态。如无内容，则删除item对应的db条目。
+3. 保存当前itemWindow的内容，并通知listWindow，更新对应条目的内容
+4. 删除当前itemWindow内容，并关闭itemWindow
+5. 点击更改颜色
+6. 更改透明度
+7. 显示listWindow，如已经显示，则focus
+8. 点击置顶
+
+## listWindow操作集
+1. 打开新的itemWindow
+2. 双击item打开对应的itemWindow，如果已经开了，则focus
+3. 输入搜索内容，自动搜索，filter列表中的item，并高亮搜索词
+4. 点击设置按钮，转到设置页面，更改设置项后，保存并更新前端显示
+5. 右键点击item或者hover到item上面，出现close、open或删除的操作
+6. 右键菜单打开对应的itemWindow
+7. 右键菜单删除对应的itemWindow
+8. 右键菜单关闭对应的itemWindow
