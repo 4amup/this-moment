@@ -9,7 +9,8 @@ const settingDB = Datastore(SETTING_PATH);
 const itemDB = Datastore(ITEM_PATH);
 
 // init itemDB，只有item.json文件为空才执行
-itemDB.defaults({ items: []}).write()
+settingDB.defaults({open: true});
+itemDB.defaults({ items: []}).write();
 
 module.exports = {
     settingDB: settingDB,
