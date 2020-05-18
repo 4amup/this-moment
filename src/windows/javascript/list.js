@@ -129,7 +129,7 @@ function contentRender(items, keyWord) {
             let div = document.createElement("div")
             div.id = item.id
             div.className = "item"
-            let innerHTML = `序号${index + 1}. ${item.content} ${item.open}`
+            let innerHTML = `${index + 1}. ${item.content} ${item.open}`
             if (keyWord) {// 高亮关键字处理
                 innerHTML = innerHTML.replace(keyWord, `<mark>${keyWord}</mark>`)
             }

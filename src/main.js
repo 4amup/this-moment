@@ -154,13 +154,17 @@ class App {
 
         itemWindow.once('ready-to-show', () => {
             itemWindow.show();
-            itemDB.get('items')
-                    .find({ id: item.id })
-                    .assign(item)
-                    .write()
-                    .then(() => {//持久化储存后更新全局item数据对象
-                        this.updateItems(item);
-                    });
+            // if (item) {
+            //     itemDB.get('items')
+            //         .find({ id: item.id })
+            //         .assign(item)
+            //         .write()
+            //         .then(() => {//持久化储存后更新全局item数据对象
+            //             this.updateItems(item);
+            //         });
+            // }
+            global.items.add
+            this.updateItems(item);
         });
 
         itemWindow.on('closed', () => {
