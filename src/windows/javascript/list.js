@@ -33,7 +33,19 @@ userComand.addEventListener("click", (event) => {
             currentWindow.close()
             break;
         case "add":
-            ipcRenderer.send('add-item', null);
+            //数组开头插入一个元素
+            let item = {
+                id: Date.now(),
+                content: '',
+                content_dt: '',
+                create_dt: Date.now(),
+                update_dt: Date.now(),
+                open: true
+            }
+            items.unshift(item);
+            // DOM中也插入一个元素
+            contentRender(items);
+            ipcRenderer.send('add-item', item);
             break;
         default:
             break;
@@ -68,8 +80,11 @@ function matchItems(event) {
 
 // 负责根据主进程的data，渲染list列表
 function contentRender(items) {
+    // 重新渲染
     listElement.innerText = null
-    if (items == undefined) {
+    
+    // 处理空值
+    if (!items) {
         let div = document.createElement("div")
         div.innerText = '写点你的人生海浪吧！'
         listElement.appendChild(div)
@@ -129,7 +144,7 @@ function contentRender(items, keyWord) {
             let div = document.createElement("div")
             div.id = item.id
             div.className = "item"
-            let innerHTML = `序号${index + 1}. ${item.content} ${item.open}`
+            let innerHTML = `${index + 1}. ${item.content} ${item.open}`
             if (keyWord) {// 高亮关键字处理
                 innerHTML = innerHTML.replace(keyWord, `<mark>${keyWord}</mark>`)
             }
