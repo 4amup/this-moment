@@ -2,13 +2,13 @@
 const { remote, ipcRenderer } = require('electron')
 const currnetWindow = remote.getCurrentWindow()
 
-// 全局变量数据变量
-let item = currnetWindow.item;
-
 // 全局dom变量
 let userComand = document.getElementById('user-command')
 let content = document.getElementById('content')//内容-事件
 let content_dt = document.getElementById('content-dt')//内容-时间
+
+// 全局数据变量
+let item = currnetWindow.item;
 
 // 根据数据对象item->view
 content.value = item.content
@@ -25,7 +25,14 @@ userComand.addEventListener("click", (event) => {
             currnetWindow.close();
             break;
         case "add":
-            ipcRenderer.send('add-item', null);
+            ipcRenderer.send('item-create', {
+                id: Date.now(),
+                create_dt: Date.now(),
+                update_dt: Date.now(),
+                open: true,
+                content: '',
+                content_dt: ''
+            });
             break;
         case "del":
             ipcRenderer.send('del-item', item);

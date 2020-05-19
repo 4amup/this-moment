@@ -16,12 +16,12 @@ let userComand = document.getElementById('user-command')
 let listElement = document.getElementById('list')
 let searchElement = document.getElementById('search')
 let menu = new Menu()//创建右键菜单
-menu.append(new MenuItem({ label: 'open', click: openItemWindow }))
+menu.append(new MenuItem({ label: 'open' }))
 menu.append(new MenuItem({ label: 'close' }))
 menu.append(new MenuItem({ label: 'delte' }))
 
 // 根据数据渲染list列表
-contentRender(items)
+contentRender(null, items, null)
 
 // user-comand区域事件监听
 userComand.addEventListener("click", (event) => {
@@ -33,19 +33,18 @@ userComand.addEventListener("click", (event) => {
             currentWindow.close()
             break;
         case "add":
-            //数组开头插入一个元素
-            let item = {
+            // //数组开头插入一个元素
+            // items.unshift(item);
+            // // // DOM中也插入一个元素
+            // contentRender(items);
+            ipcRenderer.send('item-create', {
                 id: Date.now(),
-                content: '',
-                content_dt: '',
                 create_dt: Date.now(),
                 update_dt: Date.now(),
-                open: true
-            }
-            items.unshift(item);
-            // DOM中也插入一个元素
-            contentRender(items);
-            ipcRenderer.send('add-item', item);
+                open: true,
+                content: '',
+                content_dt: ''
+            });
             break;
         default:
             break;
@@ -69,71 +68,26 @@ function matchItems(event) {
     }
 
     // 搜索内容
-    matchItems = items.filter(item => {
+    let matchItems = items.filter(item => {
         let matchIndex = item.content.indexOf(keyWord)
         return matchIndex > -1
     })
 
     // 根据查询结果渲染list列表
-    contentRender(matchItems, keyWord)
+    contentRender(null, matchItems, keyWord)
 }
 
-// 负责根据主进程的data，渲染list列表
-function contentRender(items) {
-    // 重新渲染
-    listElement.innerText = null
-    
-    // 处理空值
-    if (!items) {
-        let div = document.createElement("div")
-        div.innerText = '写点你的人生海浪吧！'
-        listElement.appendChild(div)
-    } else {
-        items.forEach((item, index) => {
-            let div = document.createElement("div")
-            div.id = item.id
-            div.className = "item"
-            div.innerText = `序号${index + 1}. ${item.content} ${item.open}`
-            listElement.appendChild(div)
-        })
-    }
-}
-
+// 双击item事件
 function handleDoubleClick(event) {
     if (event.target.className !== "item") {
         return;
     }
     // 找到当前双击的item
     findItemById(event.target.id);
-    ipcRenderer.send('add-item', item);
+    ipcRenderer.send('item-create', item);
 }
 
-// 打开item窗口函数
-function openItemWindow() {
-    if (!item) return
-    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口->控制台打印信息
-    if (item.open == false) {
-        let itemPath = path.join('./data/', item.id + '.json')
-        item.open = true
-        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
-            if (err) throw err
-            updateItems(item, "update")
-            mainProcess.createItemWindow(item)
-            console.log(item.id + "is saved")
-        })
-    } else {// focus这个item窗口
-
-        let itemWindow = null
-        itemWindows.forEach(value => {
-            if (value.item.id === item.id) {
-                itemWindow = value
-            }
-        })
-        if (itemWindow) itemWindow.focus()
-    }
-}
-
-function contentRender(items, keyWord) {
+function contentRender(event, items, keyWord) {
     listElement.innerText = null
     if (items == undefined) {
         let div = document.createElement("div")
@@ -144,7 +98,7 @@ function contentRender(items, keyWord) {
             let div = document.createElement("div")
             div.id = item.id
             div.className = "item"
-            let innerHTML = `${index + 1}. ${item.content} ${item.open}`
+            let innerHTML = `${index + 1}. ${item.id} ${item.content} ${item.open}`
             if (keyWord) {// 高亮关键字处理
                 innerHTML = innerHTML.replace(keyWord, `<mark>${keyWord}</mark>`)
             }
@@ -182,3 +136,6 @@ function findItemById(id) {
         return value.id == id;
     });
 }
+
+// 根据事件渲染列表界面
+ipcRenderer.on('update-list', contentRender);

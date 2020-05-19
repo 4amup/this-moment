@@ -12,7 +12,8 @@ class App {
         // 窗口管理
         this.loadWindow = null;
         this.listWindow = null;
-        this.itemWindows = null;
+        this.itemWindows = new Array();
+        // this.itemWindows = new Map();
     }
 
     init() {
@@ -41,18 +42,12 @@ class App {
 
     initIpc() {
         ipcMain.on('load-data', event => {
-            // 本地数据库读取数据-同步
+            // 本地数据库读取数据-同步-引用绑定
             global.setting = settingDB.value();
             global.items = itemDB.get('items').value();
-            
-            // 使用map数据结构存储items变量
-            // itemDB.get('items').value().forEach(value => {
-            //     global.items.set(value.id, value);
-            // });
 
-            // 逐一打开open状态的item窗口组
-            let openitems = global.items.filter((item) => {
-                return item.open == true;
+            let openitems = global.items.filter(item => {
+                return item.open === true;
             });
 
             openitems.forEach(item => {
@@ -70,53 +65,60 @@ class App {
             this.loadWindow.close();
         })
 
-        ipcMain.on('add-item', (event, item) => {
+        ipcMain.on('item-create', (event, item) => {
             this.createItemWindow(item);
+            if (this.listWindow) {
+                this.listWindow.reload();
+            }
         });
 
         ipcMain.on('item-update', (event, item) => {
-            // if (item.content) {//有值更新
-            //     itemDB.get('items')
-            //         .find({ id: item.id })
-            //         .assign(item)
-            //         .write();
-            // } else {//无值删除
-                
-            // }
-            // // 查找，找到更新，找不到插入
-            // let result = itemDB
-            //     .get('items')
-            //     .find({ id: item.id })
-            //     .value();
 
-            // if (result) {//update
-            //     itemDB.get('items')
-            //         .find({ id: item.id })
-            //         .assign(item)
-            //         .write();
-            // } else {//insert
-            //     itemDB.get('items')
-            //         .push(item)
-            //         .write()
-            // }
-            this.itemWindow.saveItem();
-        });
+            // 查找，找到更新，找不到插入
+            let result = itemDB
+                .get('items')
+                .find({ id: item.id })
+                .value();
 
-        ipcMain.on('close-item', (event, item) => {
-            // 如果content变成空的，就删除这个item
-            if (!item.content) {
-                itemDB.get('items')
-                    .remove({ id: item.id })
-                    .write();
-            } else {
-                item.open = false;
+            if (result) {//update
                 itemDB.get('items')
                     .find({ id: item.id })
                     .assign(item)
+                    .write();
+            } else {//insert
+                itemDB.get('items')
+                    .push(item)
                     .write()
-                    .then(() => {//持久化储存后更新全局item数据对象
-                        this.updateItems(item);
-                    });
+            }
+
+            if (this.listWindow) {
+                this.listWindow.reload();
+            }
+        });
+
+        ipcMain.on('close-item', (event, item) => {
+            item.open = false;
+            
+            let flag = itemDB.get('items')
+                .find({ id: item.id })
+                .value();
+
+            // 如果content变成空的，就删除这个item
+            if (!item.content) {
+                if (flag) {
+                    itemDB.get('items')
+                        .remove({ id: item.id })
+                        .write();
+                }
+            } else {
+                itemDB.get('items')
+                    .find({ id: item.id })
+                    .assign(item)
+                    .write();
+            }
+
+            if (this.listWindow) {
+                this.listWindow.reload();
             }
         });
 
@@ -159,17 +161,39 @@ class App {
         });
     }
 
-    // createItemWindow(id) {
     createItemWindow(item) {
-        // let itemWindow = new ItemWindow(id);
-        let itemWindow = new ItemWindow(item);
+        let itemWindow = this.itemWindows.find(value => {
+            return value.item.id === item.id;
+        });
+
+        if (itemWindow) {
+            itemWindow.focus();
+            return;
+        }
+
+        // 设置窗口打开状态
+        item.open = true;
+
+        itemWindow = new ItemWindow(item);
+
+        // 窗口引用
+        this.itemWindows.unshift(itemWindow);
+
+        // 持久化保存
         itemWindow.saveItem();
+
         itemWindow.once('ready-to-show', () => {
             itemWindow.show();
-            
         });
 
         itemWindow.on('closed', () => {
+            // 窗口关闭后，删除该窗口的在窗口集合中的引用
+            let index = this.itemWindows.findIndex(value => {
+                return value.item.id === itemWindow.item.id;
+            });
+
+            this.itemWindows.splice(index, 1);
+
             itemWindow = null;
         });
     }
@@ -182,14 +206,15 @@ class App {
         // 发送消息，更新list视图中对应条目的显示
         // ipcMain.send();
         // 暂时先全局刷新，将来是否启用双向绑定，另说
-        this.listWindow.reload();
+        // this.listWindow.reload();
+
     }
 
     // saveItemDB(item) {
     //     if (item.content) {
-            
+
     //     } else {
-            
+
     //     }
     // }
 }
