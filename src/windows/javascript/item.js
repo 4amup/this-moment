@@ -43,6 +43,23 @@ userComand.addEventListener("click", (event) => {
 content.addEventListener("input", updateItem);
 content_dt.addEventListener("input", updateItem);
 
+// 初始化工具栏可见性
+if (currnetWindow.isFocused()) {
+    userComand.style.visibility = 'visible';
+} else {
+    userComand.style.visibility = 'hidden';
+}
+
+// 动态改变工具栏可见性
+ipcRenderer.on('item-focus', () => {
+    userComand.style.visibility = 'visible';
+});
+
+ipcRenderer.on('item-blur', () => {
+    userComand.style.visibility = 'hidden';
+});
+
+
 // 函数功能，更新当前窗口对象的事件信息
 function updateItem() {
     item.update_dt = Date.now();

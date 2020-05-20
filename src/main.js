@@ -222,6 +222,14 @@ class App {
 
             itemWindow = null;
         });
+
+        itemWindow.on('focus', () => {
+            itemWindow.webContents.send('item-focus');
+        });
+
+        itemWindow.on('blur', () => {
+            itemWindow.webContents.send('item-blur');
+        })
     }
 }
 
