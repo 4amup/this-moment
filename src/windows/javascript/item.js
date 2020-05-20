@@ -3,9 +3,11 @@ const { remote, ipcRenderer } = require('electron')
 const currnetWindow = remote.getCurrentWindow()
 
 // 全局dom变量
-let userComand = document.getElementById('user-command')
-let content = document.getElementById('content')//内容-事件
-let content_dt = document.getElementById('content-dt')//内容-时间
+let userSetting = document.getElementById('user-setting');
+let userComand = document.getElementById('user-command');
+let container = document.getElementById('container');
+let content = document.getElementById('content');//内容-事件
+let content_dt = document.getElementById('content-dt');//内容-时间
 
 // 全局数据变量
 let item = currnetWindow.item;
@@ -15,7 +17,7 @@ content.value = item.content
 content_dt.value = item.content_dt
 
 //----------------------------user-comand区域事件监听---------------------------------------
-userComand.addEventListener("click", (event) => {
+userComand.addEventListener("click", event => {
     let button = event.target
     console.log(button.id)
     // 将主窗口控制指令传输到mainProcess
@@ -31,13 +33,41 @@ userComand.addEventListener("click", (event) => {
             ipcRenderer.send('item-delete', item);
             break;
         case "menu":
-            ipcRenderer.send('show-list');
+            userSetting.style.display = "block";
             break;
         default:
             break;
     }
+});
 
-})
+userSetting.addEventListener("click", event => {
+    let className = event.target.className;
+    if (className !== "button" && className !== "color-pad") {
+        return;
+    }
+    
+    // 设置值
+    let setting = event.target.value;
+
+    // 设置功能
+    if (className === "button") {
+        switch (setting) {
+            case "delete":
+                ipcRenderer.send('item-delete', item);
+                break;
+            case "show-list":
+                ipcRenderer.send('show-list');
+                break;
+            default:
+                break;
+        };
+    } else if (className === "color-pad") {
+        container.style.background = setting;
+        item.color = setting;
+        ipcRenderer.send('item-update', item);
+    }
+});
+
 
 // 自动保存：监听输入时自动保存
 content.addEventListener("input", updateItem);
