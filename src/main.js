@@ -68,7 +68,9 @@ class App {
         ipcMain.on('item-create', (event, item) => {
             this.createItemWindow(item);
             if (this.listWindow) {
-                this.listWindow.reload();
+                // this.listWindow.reload();
+                // event.sender.send('list-update', global.items);
+                this.listWindow.webContents.send('list-update', global.items);
             }
         });
 
@@ -92,13 +94,15 @@ class App {
             }
 
             if (this.listWindow) {
-                this.listWindow.reload();
+                // this.listWindow.reload();
+                // event.sender.send('list-update', global.items);
+                this.listWindow.webContents.send('list-update', global.items);
             }
         });
 
         ipcMain.on('close-item', (event, item) => {
             item.open = false;
-            
+
             let flag = itemDB.get('items')
                 .find({ id: item.id })
                 .value();
@@ -118,7 +122,9 @@ class App {
             }
 
             if (this.listWindow) {
-                this.listWindow.reload();
+                // this.listWindow.reload();
+                // event.sender.send('list-update', global.items);
+                this.listWindow.webContents.send('list-update', global.items);
             }
         });
 
