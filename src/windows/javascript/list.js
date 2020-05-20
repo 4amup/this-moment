@@ -42,18 +42,7 @@ userComand.addEventListener("click", (event) => {
             currentWindow.close();
             break;
         case "add":
-            // //数组开头插入一个元素
-            // items.unshift(item);
-            // // // DOM中也插入一个元素
-            // contentRender(items);
-            ipcRenderer.send('item-create', {
-                id: Date.now(),
-                create_dt: Date.now(),
-                update_dt: Date.now(),
-                open: true,
-                content: '',
-                content_dt: ''
-            });
+            itemCreate();
             break;
         default:
             break;
@@ -148,6 +137,19 @@ function findItemById(id) {
         return value.id == id;
     });
     return item;
+}
+
+function itemCreate() {
+    let item = {
+        id: Date.now(),
+        create_dt: Date.now(),
+        update_dt: Date.now(),
+        open: true,
+        content: '',
+        content_dt: ''
+    }
+    ipcRenderer.send('item-create', item);
+    ipcRenderer.send('item-update', item);
 }
 
 // 根据事件渲染列表界面

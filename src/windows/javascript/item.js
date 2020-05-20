@@ -25,14 +25,7 @@ userComand.addEventListener("click", (event) => {
             // currnetWindow.close();
             break;
         case "add":
-            ipcRenderer.send('item-create', {
-                id: Date.now(),
-                create_dt: Date.now(),
-                update_dt: Date.now(),
-                open: true,
-                content: '',
-                content_dt: ''
-            });
+            itemCreate();
             break;
         case "del":
             ipcRenderer.send('item-delete', item);
@@ -56,5 +49,19 @@ function updateItem() {
     item.content = content.value;
     item.content_dt = content_dt.value;
     // 传送数据回主进程
+    ipcRenderer.send('item-update', item);
+}
+
+// 添加新窗口
+function itemCreate() {
+    let item = {
+        id: Date.now(),
+        create_dt: Date.now(),
+        update_dt: Date.now(),
+        open: true,
+        content: '',
+        content_dt: ''
+    }
+    ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
 }
