@@ -21,8 +21,8 @@ userComand.addEventListener("click", (event) => {
     // 将主窗口控制指令传输到mainProcess
     switch (button.id) {
         case "exit":
-            ipcRenderer.send('close-item', item);
-            currnetWindow.close();
+            ipcRenderer.send('item-close', item);
+            // currnetWindow.close();
             break;
         case "add":
             ipcRenderer.send('item-create', {
@@ -35,7 +35,7 @@ userComand.addEventListener("click", (event) => {
             });
             break;
         case "del":
-            ipcRenderer.send('del-item', item);
+            ipcRenderer.send('item-delete', item);
             break;
         case "menu":
             ipcRenderer.send('show-list');

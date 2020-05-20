@@ -13,13 +13,21 @@ let userComand = document.getElementById('user-command')
 let listElement = document.getElementById('list')
 let searchElement = document.getElementById('search')
 let menu = new Menu()//创建右键菜单
-menu.append(new MenuItem({ label: 'open', click() {
-    ipcRenderer.send('item-create', item);
-} }))
-menu.append(new MenuItem({ label: 'close', click() {
-    ipcRenderer.send('close-item', item);
-}}))
-menu.append(new MenuItem({ label: 'delte' }))
+menu.append(new MenuItem({
+    label: 'open', click() {
+        ipcRenderer.send('item-create', item);
+    }
+}))
+menu.append(new MenuItem({
+    label: 'close', click() {
+        ipcRenderer.send('item-close', item);
+    }
+}))
+menu.append(new MenuItem({
+    label: 'delete', click() {
+        ipcRenderer.send('item-delete', item);
+    }
+}))
 
 // 根据数据渲染list列表
 contentRender(null, items, null);
@@ -90,11 +98,7 @@ function handleDoubleClick(event) {
 
 function contentRender(event, items, keyWord) {
     listElement.innerText = null;
-    if (items == undefined) {
-        let div = document.createElement("div");
-        div.innerText = '写点你的人生海浪吧！';
-        listElement.appendChild(div);
-    } else {
+    if (items) {
         items.forEach((item, index) => {
             let div = document.createElement("div");
             div.id = item.id;
@@ -106,6 +110,11 @@ function contentRender(event, items, keyWord) {
             div.innerHTML = innerHTML;
             listElement.appendChild(div);
         })
+    } else {
+        let div = document.createElement("div");
+        div.innerText = '写点你的人生海浪吧！';
+        listElement.appendChild(div);
+
     }
 }
 

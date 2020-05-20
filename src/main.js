@@ -68,8 +68,6 @@ class App {
         ipcMain.on('item-create', (event, item) => {
             this.createItemWindow(item);
             if (this.listWindow) {
-                // this.listWindow.reload();
-                // event.sender.send('list-update', global.items);
                 this.listWindow.webContents.send('list-update', global.items);
             }
         });
@@ -94,13 +92,18 @@ class App {
             }
 
             if (this.listWindow) {
-                // this.listWindow.reload();
-                // event.sender.send('list-update', global.items);
                 this.listWindow.webContents.send('list-update', global.items);
             }
         });
 
-        ipcMain.on('close-item', (event, item) => {
+        ipcMain.on('item-close', (event, item) => {
+            // 关闭对应窗口
+            let itemWindow = this.itemWindows.find(value => {
+                return value.item.id === item.id;
+            });
+
+            if (itemWindow) itemWindow.close();
+
             item.open = false;
 
             let flag = itemDB.get('items')
@@ -122,8 +125,25 @@ class App {
             }
 
             if (this.listWindow) {
-                // this.listWindow.reload();
-                // event.sender.send('list-update', global.items);
+                this.listWindow.webContents.send('list-update', global.items);
+            }
+        });
+
+        ipcMain.on('item-delete', (event, item) => {
+            // 关闭对应窗口
+            let itemWindow = this.itemWindows.find(value => {
+                return value.item.id === item.id;
+            });
+
+            if (itemWindow) itemWindow.close();
+
+            // 删除item
+            itemDB.get('items')
+                .remove({ id: item.id })
+                .write();
+
+            // 更新list视图
+            if (this.listWindow) {
                 this.listWindow.webContents.send('list-update', global.items);
             }
         });
@@ -203,26 +223,6 @@ class App {
             itemWindow = null;
         });
     }
-
-    updateItems(item) {
-        global.items.find(value => {
-            return value.id = item.id;
-        }) = item;
-
-        // 发送消息，更新list视图中对应条目的显示
-        // ipcMain.send();
-        // 暂时先全局刷新，将来是否启用双向绑定，另说
-        // this.listWindow.reload();
-
-    }
-
-    // saveItemDB(item) {
-    //     if (item.content) {
-
-    //     } else {
-
-    //     }
-    // }
 }
 
 new App().init()
