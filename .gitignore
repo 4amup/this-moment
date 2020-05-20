@@ -1,4 +1,4 @@
 node_modules
 
 # user data 文件夹
-userdata/
+userdata/*.json
