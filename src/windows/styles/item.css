@@ -1,10 +1,31 @@
 /* 无边框需要拖动的hack写法 */
+html, body {
+    height:100%;
+    margin:0;
+}
+#container {
+    height: 100%;
+}
 body {
     -webkit-app-region: drag
 }
 button, input {
     -webkit-app-region: no-drag
 }
-#user-setting {
-    display: none;
+.setting-init {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 0;
+    width: 100%;
+    overflow: hidden;
+}
+.setting-show {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 50%;
+    width: 100%;
+    background: aquamarine;
+
 }

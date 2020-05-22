@@ -1,6 +1,6 @@
 // CONST 变量
-const { remote, ipcRenderer } = require('electron')
-const currnetWindow = remote.getCurrentWindow()
+const { remote, ipcRenderer } = require('electron');
+const currnetWindow = remote.getCurrentWindow();
 
 // 全局dom变量
 let userSetting = document.getElementById('user-setting');
@@ -13,11 +13,13 @@ let content_dt = document.getElementById('content-dt');//内容-时间
 let item = currnetWindow.item;
 
 // 根据数据对象item->view
-content.value = item.content
-content_dt.value = item.content_dt
+content.value = item.content;
+content_dt.value = item.content_dt;
+container.style.background = item.color;
 
 //----------------------------user-comand区域事件监听---------------------------------------
 userComand.addEventListener("click", event => {
+    event.stopPropagation();
     let button = event.target
     console.log(button.id)
     // 将主窗口控制指令传输到mainProcess
@@ -33,19 +35,24 @@ userComand.addEventListener("click", event => {
             ipcRenderer.send('item-delete', item);
             break;
         case "menu":
-            userSetting.style.display = "block";
+            userSetting.className = 'setting-show';
             break;
         default:
             break;
     }
 });
 
+container.addEventListener("click", event => {
+    userSetting.className = 'setting-init';
+})
+
 userSetting.addEventListener("click", event => {
+    event.stopPropagation();
     let className = event.target.className;
     if (className !== "button" && className !== "color-pad") {
         return;
     }
-    
+
     // 设置值
     let setting = event.target.value;
 
@@ -66,6 +73,8 @@ userSetting.addEventListener("click", event => {
         item.color = setting;
         ipcRenderer.send('item-update', item);
     }
+
+    userSetting.className = 'setting-init';
 });
 
 
@@ -107,7 +116,8 @@ function itemCreate() {
         update_dt: Date.now(),
         open: true,
         content: '',
-        content_dt: ''
+        content_dt: '',
+        color: 'red'
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);

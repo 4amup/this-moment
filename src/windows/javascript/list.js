@@ -146,7 +146,8 @@ function itemCreate() {
         update_dt: Date.now(),
         open: true,
         content: '',
-        content_dt: ''
+        content_dt: '',
+        color: 'red',
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
