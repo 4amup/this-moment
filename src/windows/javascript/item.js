@@ -1,9 +1,11 @@
 // CONST 变量
 const { remote, ipcRenderer } = require('electron');
 const currnetWindow = remote.getCurrentWindow();
+const Common = require('../../lib/common');
 
 // 全局dom变量
 let userSetting = document.getElementById('user-setting');
+let colorPalette = document.getElementById('color-palette');
 let userComand = document.getElementById('user-command');
 let pin = document.getElementById('pin');
 // let contentContainer = document.getElementById('content-container');
@@ -13,6 +15,18 @@ let content_dt = document.getElementById('content-dt');//内容-时间
 
 // 全局数据变量
 let item = currnetWindow.item;
+
+// 动态生成user-setting区域
+colorPalette.innerText = null;
+Object.values(Common.ITEM_COLOR).forEach(element => {
+    let div = document.createElement('div');
+    div.id = element;
+    div.className = 'color-pick';
+    div.innerText = element;
+    div.style.background= element;
+    colorPalette.appendChild(div);
+});
+
 
 // 根据数据对象item->view
 content.value = item.content;

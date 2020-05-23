@@ -25,7 +25,6 @@ class Common {
         height: 400,
     };
     static WINDOW_URL = {
-        // load: `file://${__dirname}/windows/views/load.html`,
         load: `file://${path.join(__dirname, '/../windows/views/load.html')}`,
         list: `file://${path.join(__dirname, '/../windows/views/list.html')}`,
         item: `file://${path.join(__dirname, '/../windows/views/item.html')}`,
@@ -58,6 +57,13 @@ class Common {
         repo: 'GitHub 目录',
         feedback: '联系我们',
         checkRelease: '检查更新',
+    };
+    static ITEM_COLOR = {
+        color1: 'red',
+        color2: 'green',
+        color3: 'blue',
+        color4: 'yellow',
+        color5: 'yellow',
     };
 }
 

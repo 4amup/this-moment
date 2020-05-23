@@ -29,11 +29,26 @@ html, body {
     width: 100%;
     overflow: hidden;
     background: aquamarine;
-    /* border-radius: 5px; */
+    display: flex;
+    flex-flow: column;
 }
-.setting-init{
+.setting-init {
     height: 0;
 }
 .setting-show {
     height: 20%;
+}
+.setting-item {
+    flex: 1;
+}
+#color-palette {
+    display: flex;
+    flex-flow: row;
+}
+#color-palette .color-pick {
+    flex: 1;
+}
+#color-palette .color-pick:hover {
+    flex: 1;
+    font-weight: bolder;
 }
