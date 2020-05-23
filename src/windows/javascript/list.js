@@ -62,7 +62,7 @@ function matchItems(event) {
     let keyWord = searchElement.value;
     let matchItem;
     if (keyWord == "") {
-        matchItem = data.items;
+        matchItem = items;
     }
 
     // 搜索内容

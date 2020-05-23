@@ -96,6 +96,15 @@ class App {
             }
         });
 
+        // 窗口属性改变
+        ipcMain.on('itemWindow-change', (event, item) => {
+            let itemWindow = this.itemWindows.find(value => {
+                return value.item.id === item.id;
+            });
+
+            itemWindow.setAlwaysOnTop(item.pin);
+        });
+
         ipcMain.on('item-close', (event, item) => {
             // 关闭对应窗口
             let itemWindow = this.itemWindows.find(value => {
@@ -205,8 +214,8 @@ class App {
         // 窗口引用
         this.itemWindows.unshift(itemWindow);
 
-        // 持久化保存
-        itemWindow.saveItem();
+        // pin
+        itemWindow.setAlwaysOnTop(true)
 
         itemWindow.once('ready-to-show', () => {
             itemWindow.show();

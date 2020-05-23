@@ -5,6 +5,8 @@ const currnetWindow = remote.getCurrentWindow();
 // 全局dom变量
 let userSetting = document.getElementById('user-setting');
 let userComand = document.getElementById('user-command');
+let pin = document.getElementById('pin');
+// let contentContainer = document.getElementById('content-container');
 let container = document.getElementById('container');
 let content = document.getElementById('content');//内容-事件
 let content_dt = document.getElementById('content-dt');//内容-时间
@@ -16,6 +18,11 @@ let item = currnetWindow.item;
 content.value = item.content;
 content_dt.value = item.content_dt;
 container.style.background = item.color;
+if (item.pin) {
+    pin.innerText = 'Pined';
+} else {
+    pin.innerText = 'Pin';
+}
 
 //----------------------------user-comand区域事件监听---------------------------------------
 userComand.addEventListener("click", event => {
@@ -37,14 +44,26 @@ userComand.addEventListener("click", event => {
         case "menu":
             userSetting.className = 'setting-show';
             break;
+        case "pin":
+            if (item.pin) {
+                item.pin = false;
+                pin.innerText = 'Pin';
+            } else {
+                item.pin = true;
+                pin.innerText = 'Pined';
+            }
+            ipcRenderer.send('itemWindow-change', item);
+            ipcRenderer.send('item-update', item);
+            break;
         default:
             break;
     }
 });
 
+// 点击内容区域，自动隐藏
 container.addEventListener("click", event => {
     userSetting.className = 'setting-init';
-})
+});
 
 userSetting.addEventListener("click", event => {
     event.stopPropagation();
@@ -96,6 +115,7 @@ ipcRenderer.on('item-focus', () => {
 
 ipcRenderer.on('item-blur', () => {
     userComand.style.visibility = 'hidden';
+    userSetting.className = 'setting-init';
 });
 
 

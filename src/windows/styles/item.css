@@ -6,26 +6,34 @@ html, body {
 #container {
     height: 100%;
 }
-body {
-    -webkit-app-region: drag
+#user-command {
+    -webkit-app-region: drag;
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 30px;
+    width: 100%;
+    background-color:rgba(0,0,0,0.2);
 }
-button, input {
-    -webkit-app-region: no-drag
+#user-command button {
+    -webkit-app-region: no-drag;
 }
-.setting-init {
+#content-container {
+    padding: 30px 0 0 0;
+}
+.setting-init, .setting-show {
     position: absolute;
     left: 0;
     top: 0;
     height: 0;
     width: 100%;
     overflow: hidden;
+    background: aquamarine;
+    /* border-radius: 5px; */
+}
+.setting-init{
+    height: 0;
 }
 .setting-show {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 50%;
-    width: 100%;
-    background: aquamarine;
-
+    height: 20%;
 }
