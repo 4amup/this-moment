@@ -215,7 +215,7 @@ class App {
         this.itemWindows.unshift(itemWindow);
 
         // pin
-        itemWindow.setAlwaysOnTop(true)
+        itemWindow.setAlwaysOnTop(item.pin)
 
         itemWindow.once('ready-to-show', () => {
             itemWindow.show();

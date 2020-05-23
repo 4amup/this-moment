@@ -82,15 +82,15 @@ container.addEventListener("click", event => {
 userSetting.addEventListener("click", event => {
     event.stopPropagation();
     let className = event.target.className;
-    if (className !== "button" && className !== "color-pad") {
+    if (className !== "setting-item" && className !== "color-pick") {
         return;
     }
 
     // 设置值
-    let setting = event.target.value;
+    let setting = event.target.id;
 
     // 设置功能
-    if (className === "button") {
+    if (className === "setting-item") {
         switch (setting) {
             case "delete":
                 ipcRenderer.send('item-delete', item);
@@ -101,12 +101,11 @@ userSetting.addEventListener("click", event => {
             default:
                 break;
         };
-    } else if (className === "color-pad") {
+    } else if (className === "color-pick") {
         container.style.background = setting;
         item.color = setting;
         ipcRenderer.send('item-update', item);
     }
-
     userSetting.className = 'setting-init';
 });
 
@@ -151,7 +150,8 @@ function itemCreate() {
         open: true,
         content: '',
         content_dt: '',
-        color: 'red'
+        color: 'red',
+        pin: false,
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);

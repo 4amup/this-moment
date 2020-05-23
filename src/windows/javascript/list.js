@@ -148,6 +148,7 @@ function itemCreate() {
         content: '',
         content_dt: '',
         color: 'red',
+        pin: false,
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
