@@ -147,7 +147,9 @@ function itemCreate() {
         update_dt: Date.now(),
         open: true,
         content: '',
-        content_dt: '',
+        // content_dt: '',
+        content_date: '',
+        content_time: '',
         color: Common.ITEM_COLOR.color1,
         pin: false,
     }
