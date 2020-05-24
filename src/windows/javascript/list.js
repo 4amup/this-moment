@@ -2,6 +2,7 @@ const { remote, ipcRenderer } = require('electron');
 const Menu = remote.Menu;
 const MenuItem = remote.MenuItem;
 const currentWindow = remote.getCurrentWindow();
+const Common = require('../../lib/common');
 
 // 读取全局数据
 let setting = remote.getGlobal('setting');
@@ -147,7 +148,7 @@ function itemCreate() {
         open: true,
         content: '',
         content_dt: '',
-        color: 'red',
+        color: Common.ITEM_COLOR.color1,
         pin: false,
     }
     ipcRenderer.send('item-create', item);

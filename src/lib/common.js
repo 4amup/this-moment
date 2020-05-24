@@ -59,12 +59,16 @@ class Common {
         checkRelease: '检查更新',
     };
     static ITEM_COLOR = {
-        color1: 'red',
-        color2: 'green',
-        color3: 'blue',
-        color4: 'yellow',
-        color5: 'yellow',
+        color1: '#e7e7eb',//紫水晶
+        color2: '#ebf6f7',//蓝白
+        color3: '#d6e9ca',//白緑
+        color4: '#edd1d8',//藕色
+        color5: '#dcd3b2',//砂色
+        color6: '#a0d8ef',//空色
     };
+    static ITEM_LABEL = {
+        
+    }
 }
 
 module.exports = Common;

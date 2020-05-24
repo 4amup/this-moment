@@ -8,7 +8,7 @@ let userSetting = document.getElementById('user-setting');
 let colorPalette = document.getElementById('color-palette');
 let userComand = document.getElementById('user-command');
 let pin = document.getElementById('pin');
-// let contentContainer = document.getElementById('content-container');
+let tip = document.getElementById('tip');
 let container = document.getElementById('container');
 let content = document.getElementById('content');//内容-事件
 let content_dt = document.getElementById('content-dt');//内容-时间
@@ -36,7 +36,8 @@ if (item.pin) {
     pin.innerText = 'Pined';
 } else {
     pin.innerText = 'Pin';
-}
+};
+tip.innerText;
 
 //----------------------------user-comand区域事件监听---------------------------------------
 userComand.addEventListener("click", event => {
@@ -150,9 +151,32 @@ function itemCreate() {
         open: true,
         content: '',
         content_dt: '',
-        color: 'red',
+        color: Common.ITEM_COLOR.color1,
         pin: false,
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
+}
+
+// 根据input渲染tip，content还有1年3个月1天23小时2分就开始，content已经过去345天2分
+// type 按秒显示，按分钟显示，按小时显示，按天显示，按月显示，按年显示；不传此参数，就是按秒显示
+function renderTip(item, type) {
+    //有日期或时间才计算，否则仅仅显示content
+    //只有日期，仅仅计算到天数
+    //只有时间，按当天计算
+    if(!item.content) {
+        tip.innerText = '海浪未起';
+        return;
+    }
+
+    let interval;
+    // 只有时间，按当天计算
+    if (!item.content_data && item_content_time) {
+        
+    }
+    if (item.content_date && item.content_time) {
+        // 判断过去将来
+        let datetime = item.content_date + item.content_time;
+        let timestamp = Date.parse(datetime);
+    }
 }
