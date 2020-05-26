@@ -66,8 +66,12 @@ class Common {
         color5: '#dcd3b2',//砂色
         color6: '#a0d8ef',//空色
     };
-    static ITEM_LABEL = {
-        
+    static ITEM_CONTEN_TYPE = {
+        type1: 'second',
+        type2: 'minute',
+        type3: 'hour',
+        type4: 'day',
+        type5: 'full',
     }
 }
 

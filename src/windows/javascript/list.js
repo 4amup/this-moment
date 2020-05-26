@@ -150,6 +150,7 @@ function itemCreate() {
         // content_dt: '',
         content_date: '',
         content_time: '',
+        content_type: Common.ITEM_CONTEN_TYPE.type1,
         color: Common.ITEM_COLOR.color1,
         pin: false,
     }
