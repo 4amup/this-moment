@@ -158,6 +158,7 @@ function itemCreate() {
         color: Common.ITEM_COLOR.color1,
         pin: false,
         position: getPosition(),
+        size: Common.WINDOW_SIZE_ITEM,
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
@@ -188,6 +189,15 @@ function getPosition() {
             position[1] += offset[1];
             break;
     }
+    
+    if (position[0] < 0) {
+        position[0] = 5;
+    }
+
+    if (position[1] < 0) {
+        position[1] = 5;
+    }
+
     return position;
 }
 

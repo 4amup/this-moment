@@ -238,7 +238,25 @@ class App {
 
         itemWindow.on('blur', () => {
             itemWindow.webContents.send('item-blur');
-        })
+        });
+
+        itemWindow.on('move', () => {
+            let item = itemWindow.item;
+            item.position = itemWindow.getPosition();
+            itemDB.get('items')
+                    .find({ id: item.id })
+                    .assign(item)
+                    .write();
+        });
+
+        itemWindow.on('resize', () => {
+            let item = itemWindow.item;
+            item.size = itemWindow.getSize();
+            itemDB.get('items')
+                    .find({ id: item.id })
+                    .assign(item)
+                    .write();
+        });
     }
 }
 

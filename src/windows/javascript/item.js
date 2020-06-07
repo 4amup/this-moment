@@ -1,10 +1,10 @@
 // CONST 变量
 const { remote, ipcRenderer } = require('electron');
-const currnetWindow = remote.getCurrentWindow();
+const currentWindow = remote.getCurrentWindow();
 const Common = require('../../lib/common');
 
 // 全局数据变量
-let item = currnetWindow.item;
+let item = currentWindow.item;
 
 // OFFSET计数器
 let offsetIndex = -1;
@@ -64,7 +64,7 @@ userComand.addEventListener("click", event => {
     switch (button.id) {
         case "exit":
             ipcRenderer.send('item-close', item);
-            // currnetWindow.close();
+            // currentWindow.close();
             break;
         case "add":
             itemCreate();
@@ -131,7 +131,7 @@ userSetting.addEventListener("click", event => {
 contentContainer.addEventListener("input", updateItem);
 
 // 初始化工具栏可见性
-if (currnetWindow.isFocused()) {
+if (currentWindow.isFocused()) {
     userComand.style.visibility = 'visible';
 } else {
     userComand.style.visibility = 'hidden';
@@ -170,11 +170,11 @@ function itemCreate() {
     let postion = Common.ITEM_OFFSET[offsetIndex];
 
     if (offsetIndex === 0) {
-        postion[0] + currnetWindow.getSize()[0];
+        postion[0] + currentWindow.getSize()[0];
     }
 
     if (offsetIndex === 1) {
-        postion[0] - currnetWindow.getSize()[0];
+        postion[0] - currentWindow.getSize()[0];
     }
 
     let item = {
@@ -189,6 +189,7 @@ function itemCreate() {
         color: Common.ITEM_COLOR.color1,
         pin: false,
         position: getPosition(),
+        size: Common.WINDOW_SIZE_ITEM,
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
@@ -392,6 +393,14 @@ function getPosition() {
             position[0] += offset[0];
             position[1] += offset[1];
             break;
+    }
+
+    if (position[0] < 0) {
+        position[0] = 5;
+    }
+
+    if (position[1] < 0) {
+        position[1] = 5;
     }
     return position;
 }

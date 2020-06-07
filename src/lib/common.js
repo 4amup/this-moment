@@ -20,10 +20,10 @@ class Common {
         width: 800,
         height: 600,
     };
-    static WINDOW_SIZE_ITEM = {
-        width: 400,
-        height: 400,
-    };
+    static WINDOW_SIZE_ITEM = [
+        400,
+        400,
+    ];
     static WINDOW_URL = {
         load: `file://${path.join(__dirname, '/../windows/views/load.html')}`,
         list: `file://${path.join(__dirname, '/../windows/views/list.html')}`,
