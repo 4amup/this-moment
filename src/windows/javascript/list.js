@@ -4,6 +4,9 @@ const MenuItem = remote.MenuItem;
 const currentWindow = remote.getCurrentWindow();
 const Common = require('../../lib/common');
 
+// OFFSET计数器
+let offsetIndex = -1;
+
 // 读取全局数据
 let setting = remote.getGlobal('setting');
 // let item = null;//当前操作的item引用
@@ -141,21 +144,51 @@ function findItemById(id) {
 }
 
 function itemCreate() {
+    
+
     let item = {
         id: Date.now(),
         create_dt: Date.now(),
         update_dt: Date.now(),
         open: true,
         content: '',
-        // content_dt: '',
         content_date: '',
         content_time: '',
         content_type: Common.ITEM_CONTEN_TYPE.type1,
         color: Common.ITEM_COLOR.color1,
         pin: false,
+        position: getPosition(),
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
+}
+
+function getPosition() {
+    // 窗口偏移index设置
+    offsetIndex++;
+    if (offsetIndex > Common.ITEM_OFFSET.length - 1) {
+        offsetIndex = 0;
+    };
+
+    let size = currentWindow.getSize();
+    let position = currentWindow.getPosition();
+    let offset = Common.ITEM_OFFSET[offsetIndex];
+
+    switch (offsetIndex) {
+        case 0:
+            position[0] += size[0];
+            position[0] += offset[0];
+            break;
+        case 1:
+            position[0] -= size[0];
+            position[0] -= offset[0];
+            break;
+        default:
+            position[0] += offset[0];
+            position[1] += offset[1];
+            break;
+    }
+    return position;
 }
 
 // 根据事件渲染列表界面

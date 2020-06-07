@@ -72,7 +72,15 @@ class Common {
         type3: 'hour',
         type4: 'day',
         type5: 'full',
-    }
+    };
+    static ITEM_OFFSET = [
+        [40, 0],//右
+        [40, 0],//左
+        [40, 40],//右下
+        [-40, 40],//左下
+        [40, -40],//右上
+        [-40, -40],//左上
+    ]
 }
 
 module.exports = Common;

@@ -6,6 +6,9 @@ const Common = require('../../lib/common');
 // 全局数据变量
 let item = currnetWindow.item;
 
+// OFFSET计数器
+let offsetIndex = -1;
+
 // 全局dom变量
 let userSetting = document.getElementById('user-setting');
 let colorPalette = document.getElementById('color-palette');
@@ -158,6 +161,22 @@ function updateItem() {
 
 // 添加新窗口
 function itemCreate() {
+    // 窗口偏移index设置
+    offsetIndex++;
+    if (offsetIndex > Common.ITEM_OFFSET.length - 1) {
+        offsetIndex = 0;
+    };
+
+    let postion = Common.ITEM_OFFSET[offsetIndex];
+
+    if (offsetIndex === 0) {
+        postion[0] + currnetWindow.getSize()[0];
+    }
+
+    if (offsetIndex === 1) {
+        postion[0] - currnetWindow.getSize()[0];
+    }
+
     let item = {
         id: Date.now(),
         create_dt: Date.now(),
@@ -169,6 +188,7 @@ function itemCreate() {
         content_type: Common.ITEM_CONTEN_TYPE.type1,
         color: Common.ITEM_COLOR.color1,
         pin: false,
+        position: getPosition(),
     }
     ipcRenderer.send('item-create', item);
     ipcRenderer.send('item-update', item);
@@ -184,7 +204,7 @@ function renderTip(item) {
         return '海浪未起';
     }
 
-    if(!item.content_date && !item.content_time) {
+    if (!item.content_date && !item.content_time) {
         return item.content;
     }
 
@@ -197,7 +217,7 @@ function renderTip(item) {
 
     // 日期为空，日期按当天
     if (!item.content_date) {
-        datetime = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1)<10?"0" +""+(nowDate.getMonth() + 1):(nowDate.getMonth() + 1)}-${nowDate.getDate()<10?"0"+"0"+nowDate.getDate():nowDate.getDate()}`;
+        datetime = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1) < 10 ? "0" + "" + (nowDate.getMonth() + 1) : (nowDate.getMonth() + 1)}-${nowDate.getDate() < 10 ? "0" + "0" + nowDate.getDate() : nowDate.getDate()}`;
     } else {
         datetime = item.content_date;
     }
@@ -338,12 +358,40 @@ function getMonthDays(year, month) {
     }
 }
 
-function getContenType(tagNameAttr){
+function getContenType(tagNameAttr) {
     var radio_tag = document.getElementsByName(tagNameAttr);
-    for(var i=0;i<radio_tag.length;i++){
-        if(radio_tag[i].checked){
-            var checkvalue = radio_tag[i].id;            
+    for (var i = 0; i < radio_tag.length; i++) {
+        if (radio_tag[i].checked) {
+            var checkvalue = radio_tag[i].id;
             return checkvalue;
         }
     }
+}
+
+function getPosition() {
+    // 窗口偏移index设置
+    offsetIndex++;
+    if (offsetIndex > Common.ITEM_OFFSET.length - 1) {
+        offsetIndex = 0;
+    };
+
+    let size = currentWindow.getSize();
+    let position = currentWindow.getPosition();
+    let offset = Common.ITEM_OFFSET[offsetIndex];
+
+    switch (offsetIndex) {
+        case 0:
+            position[0] += size[0];
+            position[0] += offset[0];
+            break;
+        case 1:
+            position[0] -= size[0];
+            position[0] -= offset[0];
+            break;
+        default:
+            position[0] += offset[0];
+            position[1] += offset[1];
+            break;
+    }
+    return position;
 }

@@ -15,6 +15,9 @@ class ItemWindow extends BrowserWindow {
             webPreferences: {
                 nodeIntegration: true,
             },
+            x: item.position[0],
+            y: item.position[1],
+            show: false,
         });
         this.item = item;
         this.setMenu(null);
