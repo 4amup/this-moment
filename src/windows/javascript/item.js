@@ -25,7 +25,7 @@ let content_type_checked = document.getElementById(item.content_type);//选中�
 
 // 动态生成user-setting区域
 colorPalette.innerText = null;
-Object.values(Common.ITEM_COLOR).forEach(element => {
+Common.ITEM_COLOR.forEach(element => {
     let div = document.createElement('div');
     div.id = element;
     div.className = 'color-pick';
@@ -185,8 +185,8 @@ function itemCreate() {
         content: '',
         content_date: '',
         content_time: '',
-        content_type: Common.ITEM_CONTEN_TYPE.type1,
-        color: Common.ITEM_COLOR.color1,
+        content_type: Common.ITEM_CONTEN_TYPE[0],
+        color: Common.ITEM_COLOR[0],
         pin: false,
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,

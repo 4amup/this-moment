@@ -163,6 +163,14 @@ class App {
             } else {
                 this.createListWindow();
             }
+        });
+
+        ipcMain.on('setting', () => {
+            this.listWindow.loadURL(common.WINDOW_URL.setting);
+        });
+
+        ipcMain.on('back', () => {
+            this.listWindow.loadURL(common.WINDOW_URL.list);
         })
     }
 

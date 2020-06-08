@@ -48,6 +48,9 @@ userComand.addEventListener("click", (event) => {
         case "add":
             itemCreate();
             break;
+        case "setting":
+            ipcRenderer.send('setting');
+            break;
         default:
             break;
     }
@@ -121,7 +124,6 @@ function contentMenu(event) {
 
     // 读取当前双击item的数据对象
     item = findItemById(event.target.id);
-    // gv_id = event.target.id;
 
     // 动态改变menu项目
     if (item.open) {
@@ -144,7 +146,7 @@ function findItemById(id) {
 }
 
 function itemCreate() {
-    
+
 
     let item = {
         id: Date.now(),
@@ -154,8 +156,8 @@ function itemCreate() {
         content: '',
         content_date: '',
         content_time: '',
-        content_type: Common.ITEM_CONTEN_TYPE.type1,
-        color: Common.ITEM_COLOR.color1,
+        content_type: Common.ITEM_CONTEN_TYPE[0],
+        color: Common.ITEM_COLOR[0],
         pin: false,
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
@@ -189,7 +191,7 @@ function getPosition() {
             position[1] += offset[1];
             break;
     }
-    
+
     if (position[0] < 0) {
         position[0] = 5;
     }
