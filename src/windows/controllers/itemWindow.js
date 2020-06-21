@@ -9,12 +9,8 @@ class ItemWindow extends BrowserWindow {
             title: Common.LIFE_OCEAN,
             icon: path.join(__dirname, '../../../assets/icon.png'),
             frame: false,
-            // width: item.size[0] ? item.size[0] : Common.WINDOW_SIZE_LOAD.width,
             width: item.size[0],
-            // width: Common.WINDOW_SIZE_ITEM.width,
-            // height: item.size[1] ? item.size[1] : Common.WINDOW_SIZE_LOAD.width,
             height: item.size[1],
-            // height: Common.WINDOW_SIZE_ITEM.height,
             titleBarStyle: 'hidden-inset',
             webPreferences: {
                 nodeIntegration: true,

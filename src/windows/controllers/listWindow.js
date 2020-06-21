@@ -13,7 +13,8 @@ class ListWindow extends BrowserWindow {
             titleBarStyle: 'hidden-inset',
             webPreferences: {
                 nodeIntegration: true,
-            }
+            },
+            show: true
         });
         this.setMenu(null);
         this.loadURL(Common.WINDOW_URL.list);

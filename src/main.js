@@ -171,7 +171,22 @@ class App {
 
         ipcMain.on('back', () => {
             this.listWindow.loadURL(common.WINDOW_URL.list);
-        })
+        });
+
+        ipcMain.on('setting-login', (event, state) => {
+            settingDB.set('login', state)
+                .write();
+            global.setting.login = state;
+            app.setLoginItemSettings({
+                openAtLogin: state,
+            });
+        });
+
+        ipcMain.on('setting-open', (event, state) => {
+            settingDB.set('open', state)
+                .write();
+            global.setting.open = state;
+        });
     }
 
     createLoadWindow() {
@@ -189,18 +204,19 @@ class App {
         this.listWindow = new ListWindow();
         this.listWindow.once('ready-to-show', () => {
             this.listWindow.show();
-            settingDB.set('open', true)
-                .then(() => {
-                    global.setting.open = true;
-                });
         });
 
         this.listWindow.on('closed', () => {
             this.listWindow = null;
             settingDB.set('open', false)
-                .then(() => {
-                    global.setting.open = false;
-                });
+                .write();
+            global.setting.open = false;
+        });
+
+        this.listWindow.on('focus', () => {
+            settingDB.set('open', true)
+                .write();
+            global.setting.open = true;
         });
     }
 
@@ -252,18 +268,18 @@ class App {
             let item = itemWindow.item;
             item.position = itemWindow.getPosition();
             itemDB.get('items')
-                    .find({ id: item.id })
-                    .assign(item)
-                    .write();
+                .find({ id: item.id })
+                .assign(item)
+                .write();
         });
 
         itemWindow.on('resize', () => {
             let item = itemWindow.item;
             item.size = itemWindow.getSize();
             itemDB.get('items')
-                    .find({ id: item.id })
-                    .assign(item)
-                    .write();
+                .find({ id: item.id })
+                .assign(item)
+                .write();
         });
     }
 }
