@@ -41,9 +41,9 @@ content_date.value = item.content_date;
 content_time.value = item.content_time;
 container.style.background = item.color;
 if (item.pin) {
-    pin.innerText = 'Pined';
+    pin.background = 'red';
 } else {
-    pin.innerText = 'Pin';
+    pin.background = 'green';
 };
 
 content_type_checked.checked = true;
@@ -78,10 +78,10 @@ userComand.addEventListener("click", event => {
         case "pin":
             if (item.pin) {
                 item.pin = false;
-                pin.innerText = 'Pin';
+                pin.background = 'red';
             } else {
                 item.pin = true;
-                pin.innerText = 'Pined';
+                pin.background = 'green';
             }
             ipcRenderer.send('itemWindow-change', item);
             ipcRenderer.send('item-update', item);

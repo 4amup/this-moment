@@ -13,7 +13,6 @@ class App {
         this.loadWindow = null;
         this.listWindow = null;
         this.itemWindows = new Array();
-        // this.itemWindows = new Map();
     }
 
     init() {

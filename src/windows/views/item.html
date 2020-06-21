@@ -3,24 +3,35 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
   <link rel="stylesheet" type="text/css" href="../styles/item.css">
+  <link rel="stylesheet" type="text/css" href="../styles/iconfont.css">
   <title>人生日历</title>
 </head>
 
 <body>
   <div id="container">
     <div id="user-command">
-      <button id="add">+</button>
-      <button id="menu">...</button>
-      <button id="exit">X</button>
-      <button id="pin">Pin</button>
+      <button id="add">
+        <span class="iconfont icon-add"></span>
+      </button>
+      <button id="menu">
+        <span class="iconfont icon-more"></span>
+      </button>
+      <button id="exit">
+        <span class="iconfont icon-close"></span>
+      </button>
+      <button id="pin">
+        <span class="iconfont icon-pin"></span>
+      </button>
     </div>
     <div id="user-setting" class="setting-init">
       <div id="color-palette" class="setting-item">待渲染</div>
-      <div id="show-list" class="setting-item">show-list</div>
-      <div id='delete' class="setting-item">delete</div>
+      <div id="show-list" class="setting-item">
+        <span class="iconfont icon-other"></span>
+      </div>
+      <div id='delete' class="setting-item">
+        <span class="iconfont icon-trash"></span>
+      </div>
     </div>
     <div id="content-container">
       <p id="tip">根据下面内容渲染</p>

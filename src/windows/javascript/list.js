@@ -9,7 +9,6 @@ let offsetIndex = -1;
 
 // 读取全局数据
 let setting = remote.getGlobal('setting');
-// let item = null;//当前操作的item引用
 let items = remote.getGlobal('items');
 let item = null;
 
@@ -54,7 +53,7 @@ userComand.addEventListener("click", (event) => {
         default:
             break;
     }
-})
+}, false)
 
 // listElement.addEventListener("dblclick", openItemWindow)// item双击open
 listElement.addEventListener("dblclick", handleDoubleClick);// item双击open

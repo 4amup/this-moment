@@ -2,8 +2,8 @@ const path = require('path')
 
 // 此类承载静态属性，抽象出常用属性
 class Common {
-    // static DEBUG_MODE = true;
-    static DEBUG_MODE = false;
+    static DEBUG_MODE = true;
+    // static DEBUG_MODE = false;
     static LIFE_OCEAN = '人生海海';
     static WINDOW_SIZE = {
         width: 800,
