@@ -12,50 +12,43 @@ let setting = remote.getGlobal('setting');
 let items = remote.getGlobal('items');
 let item = null;
 
-let userComand = document.getElementById('user-command')
-let listElement = document.getElementById('list')
-let searchElement = document.getElementById('search')
-let menu = new Menu()//创建右键菜单
+// let userCommand = document.getElementById('user-command');
+let addElement = document.getElementById('add');
+let settingElement = document.getElementById('setting');
+let closeElement = document.getElementById('close');
+let listElement = document.getElementById('list');
+let searchElement = document.getElementById('search');
+let menu = new Menu();
+
+//创建右键菜单
 menu.append(new MenuItem({
     label: 'open', click() {
         ipcRenderer.send('item-create', item);
     }
-}))
+}));
 menu.append(new MenuItem({
     label: 'close', click() {
         ipcRenderer.send('item-close', item);
     }
-}))
+}));
 menu.append(new MenuItem({
     label: 'delete', click() {
         ipcRenderer.send('item-delete', item);
     }
-}))
+}));
 
 // 根据数据渲染list列表
 contentRender(null, items, null);
 
 // user-comand区域事件监听
-userComand.addEventListener("click", (event) => {
-    let button = event.target;
-    console.log(button.id);
-    // 将主窗口控制指令传输到mainProcess
-    switch (button.id) {
-        case "close":
-            currentWindow.close();
-            break;
-        case "add":
-            itemCreate();
-            break;
-        case "setting":
-            ipcRenderer.send('setting');
-            break;
-        default:
-            break;
-    }
-}, false)
+addElement.onclick = itemCreate;
+settingElement.onclick = () => {
+    ipcRenderer.send('setting');
+};
+closeElement.onclick = () => {
+    currentWindow.close();
+};
 
-// listElement.addEventListener("dblclick", openItemWindow)// item双击open
 listElement.addEventListener("dblclick", handleDoubleClick);// item双击open
 listElement.addEventListener("contextmenu", contentMenu);// item右键菜单open close del
 // search功能按照keyup绑定事件，触发查询操作，高亮查询内容，并过滤

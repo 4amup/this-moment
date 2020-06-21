@@ -13,14 +13,17 @@ let offsetIndex = -1;
 let userSetting = document.getElementById('user-setting');
 let colorPalette = document.getElementById('color-palette');
 let userComand = document.getElementById('user-command');
-let pin = document.getElementById('pin');
+let addElement = document.getElementById('add');
+let menuElement = document.getElementById('menu');
+let exitElement = document.getElementById('exit');
+let deleteElement = document.getElementById('delete');
+let pinElement = document.getElementById('pin');
 let tip = document.getElementById('tip');
 let container = document.getElementById('container');
 let contentContainer = document.getElementById('content-container');
 let content = document.getElementById('content');//内容-事件
 let content_date = document.getElementById('content-date');//内容-日期
 let content_time = document.getElementById('content-time');//内容-时间
-let content_type = document.getElementsByName('content-type');//内容-显示类型
 let content_type_checked = document.getElementById(item.content_type);//选中的radio
 
 // 动态生成user-setting区域
@@ -41,9 +44,9 @@ content_date.value = item.content_date;
 content_time.value = item.content_time;
 container.style.background = item.color;
 if (item.pin) {
-    pin.background = 'red';
+    pinElement.style.background = 'grey';
 } else {
-    pin.background = 'green';
+    pinElement.style.background = '';
 };
 
 content_type_checked.checked = true;
@@ -54,41 +57,32 @@ setInterval(() => {
     tip.innerText = renderTip(item)
 }, 1000);
 
-// 按秒重复刷新时间
 //----------------------------user-comand区域事件监听---------------------------------------
-userComand.addEventListener("click", event => {
+exitElement.addEventListener('click', event => {
+    ipcRenderer.send('item-close', item);
+});
+
+addElement.addEventListener('click', itemCreate);
+
+deleteElement.addEventListener('click', event => {
+    ipcRenderer.send('item-delete', item);
+});
+
+menuElement.addEventListener('click', event => {
     event.stopPropagation();
-    let button = event.target
-    console.log(button.id)
-    // 将主窗口控制指令传输到mainProcess
-    switch (button.id) {
-        case "exit":
-            ipcRenderer.send('item-close', item);
-            // currentWindow.close();
-            break;
-        case "add":
-            itemCreate();
-            break;
-        case "del":
-            ipcRenderer.send('item-delete', item);
-            break;
-        case "menu":
-            userSetting.className = 'setting-show';
-            break;
-        case "pin":
-            if (item.pin) {
-                item.pin = false;
-                pin.background = 'red';
-            } else {
-                item.pin = true;
-                pin.background = 'green';
-            }
-            ipcRenderer.send('itemWindow-change', item);
-            ipcRenderer.send('item-update', item);
-            break;
-        default:
-            break;
+    userSetting.className = 'setting-show';
+});
+
+pinElement.addEventListener('click', event => {
+    if (item.pin) {
+        item.pin = false;
+        pinElement.style.background = '';
+    } else {
+        item.pin = true;
+        pinElement.style.background = 'grey';
     }
+    ipcRenderer.send('itemWindow-change', item);
+    ipcRenderer.send('item-update', item);
 });
 
 // 点击内容区域，自动隐藏
