@@ -3,13 +3,14 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="../styles/common.css">
   <link rel="stylesheet" type="text/css" href="../styles/list.css">
   <link rel="stylesheet" type="text/css" href="../styles/iconfont.css">
   <title>人生日历</title>
 </head>
 
 <body>
-  <div id="container">
+  <div>
     <div id="user-command">
       <button id="add">
         <span class="iconfont icon-add"></span>
@@ -21,11 +22,16 @@
         <span class="iconfont icon-close"></span>
       </button>
     </div>
-    <div>
-      <input placeholder="搜索..." type="search" id="search">
-    </div>
-    <div id="list">
-      <span id="message"></span>
+    <div id="container">
+      <div>
+        <h1>人生海海</h1>
+      </div>
+      <div>
+        <input placeholder="搜索..." type="search" id="search">
+      </div>
+      <div id="list">
+        <span id="message"></span>
+      </div>
     </div>
   </div>
   <script src="../javascript/list.js"></script>

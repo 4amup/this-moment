@@ -1,20 +1,26 @@
-/* 无边框需要拖动的hack写法 */
-body {
-    -webkit-app-region: drag;
-    background-color: grey;
-}
-button, input {
-    -webkit-app-region: no-drag
+#container {
+    padding: 0 15px;
 }
 
-.item {
-    -webkit-app-region: no-drag
+#container h1 {
+    margin: 5px 0;
+    font-size: 22px;
 }
 
-.icon {
-    width: 1em;
-    height: 1em;
-    vertical-align: -0.15em;
-    fill: currentColor;
-    overflow: hidden;
-  }
+#search {
+    border: 0;
+    outline: none;
+    background-color: lightgray;
+    padding: 10px;
+    width: 100%;
+}
+
+#list {
+    display: flex;
+    flex-direction: column;
+}
+#list div {
+    background-color: aquamarine;
+    margin-top: 10px;
+    padding: 10px;
+}

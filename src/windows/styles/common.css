@@ -1,0 +1,31 @@
+html, body {
+    height:100%;
+    margin:0;
+}
+
+#user-command {
+    -webkit-app-region: drag;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#user-command button {
+    -webkit-app-region: no-drag;
+}
+
+#user-command button:first-child {
+    margin-right: auto;
+}
+
+#user-command button {
+    border: 1px;
+    width: 35px;
+    height: 35px;
+    margin: 0;
+    background: transparent;
+}
+
+#user-command button:hover {
+    background-color: bisque;
+}
+

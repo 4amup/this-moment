@@ -18,11 +18,11 @@ open.checked = openState;
 
 // user-comand区域事件监听
 backElement.addEventListener('click', () => {
-    currentWindow.close();
+    ipcRenderer.send('back');
 });
 
 closeElement.addEventListener('click', () => {
-    ipcRenderer.send('back');
+    currentWindow.close();
 });
 
 // 设置项事件监听
