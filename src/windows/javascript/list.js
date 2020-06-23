@@ -12,7 +12,6 @@ let setting = remote.getGlobal('setting');
 let items = remote.getGlobal('items');
 let item = null;
 
-// let userCommand = document.getElementById('user-command');
 let addElement = document.getElementById('add');
 let settingElement = document.getElementById('setting');
 let closeElement = document.getElementById('close');
@@ -37,8 +36,8 @@ menu.append(new MenuItem({
     }
 }));
 
-// 根据数据渲染list列表
-contentRender(null, items, null);
+// 初始化list列表
+renderList(event, items);
 
 // user-comand区域事件监听
 addElement.onclick = itemCreate;
@@ -71,7 +70,7 @@ function matchItems(event) {
     })
 
     // 根据查询结果渲染list列表
-    contentRender(null, matchItems, keyWord);
+    renderList(event, matchItems, keyWord);
 }
 
 // 双击item事件
@@ -84,25 +83,64 @@ function handleDoubleClick(event) {
     ipcRenderer.send('item-create', item);
 }
 
-function contentRender(event, items, keyWord) {
+function renderList(event, items, keyWord) {
     listElement.innerText = null;
     if (items) {
-        items.forEach((item, index) => {
-            let div = document.createElement("div");
-            div.id = item.id;
-            div.className = "item";
-            let innerHTML = `${index + 1}. ${item.id} ${item.content} ${item.open}`;
-            if (keyWord) {// 高亮关键字处理
-                innerHTML = innerHTML.replace(keyWord, `<mark>${keyWord}</mark>`);
-            }
-            div.innerHTML = innerHTML;
-            listElement.appendChild(div);
-        })
+        items.forEach(item => updateItem(event, item, keyWord));
     } else {
         let div = document.createElement("div");
         div.innerText = '写点你的人生海浪吧！';
         listElement.appendChild(div);
 
+    }
+}
+
+function updateItem(event, item, keyWord) {
+    let element = document.getElementById(item.id);
+
+    if (!element) {
+        element = document.createElement("div");
+        listElement.append(element);
+        element.id = item.id;
+    }
+    
+    // 是否打开状态
+    if (item.open) {
+        element.className = "item fold";
+    } else {
+        element.className = "item";
+    }
+
+    // 背景色
+    element.style.backgroundColor = item.color;
+
+    // 更新时间
+    let time = calculateTime(item.update_dt);
+
+    // 高亮内容关键词
+    let content = item.content;
+    if (keyWord) {
+        content = content.replace(keyWord, `<mark>${keyWord}</mark>`);
+    }
+
+    // 添加内容
+    let innerHTML = `<time>${time}</time><p>${content}</p>`;
+
+    // 内容放到节点上
+    element.innerHTML = innerHTML;
+}
+
+// 计算时间，返回字符串，如果是今天，返回具体时间，否则返回5天前
+function calculateTime(agoTimestamp) {
+    let nowTimestamp = Date.now();
+    let now = new Date(nowTimestamp);
+    let ago = new Date(agoTimestamp);
+
+    if (now.getFullYear() === ago.getFullYear() && now.getMonth() === ago.getMonth() && now.getDate() === ago.getDate()) {
+        return `${ago.getHours()}:${ago.getMinutes()}`;
+    } else {
+        let days = Math.floor((nowTimestamp - agoTimestamp) / (24 * 3600 * 1000));
+        return `${days}天前`;
     }
 }
 
@@ -138,8 +176,6 @@ function findItemById(id) {
 }
 
 function itemCreate() {
-
-
     let item = {
         id: Date.now(),
         create_dt: Date.now(),
@@ -196,4 +232,5 @@ function getPosition() {
 }
 
 // 根据事件渲染列表界面
-ipcRenderer.on('list-update', contentRender);
+ipcRenderer.on('list-update', renderList);
+ipcRenderer.on('update-item', updateItem)

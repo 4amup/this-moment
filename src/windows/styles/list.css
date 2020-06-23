@@ -13,6 +13,7 @@
     background-color: lightgray;
     padding: 10px;
     width: 100%;
+    border-radius: 3px;
 }
 
 #list {
@@ -23,4 +24,24 @@
     background-color: aquamarine;
     margin-top: 10px;
     padding: 10px;
+}
+#list div {
+    background-color: aquamarine;
+    margin-top: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 3px;
+}
+
+#list div time {
+    text-align: right;
+    font-size: xx-small;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+.fold {
+    background:
+        linear-gradient(to left top, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 100% / 1.4em 1.4em,
+        linear-gradient(-45deg, transparent 1em, #58a 0);
 }
