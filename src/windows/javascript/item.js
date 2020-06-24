@@ -185,7 +185,7 @@ function itemCreate() {
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
     }
-    ipcRenderer.send('item-create', item);
+    ipcRenderer.send('create-window-item', item);
     ipcRenderer.send('item-update', item);
 }
 

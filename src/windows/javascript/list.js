@@ -8,7 +8,6 @@ const Common = require('../../lib/common');
 let offsetIndex = -1;
 
 // 读取全局数据
-let setting = remote.getGlobal('setting');
 let items = remote.getGlobal('items');
 let item = null;
 
@@ -17,12 +16,12 @@ let settingElement = document.getElementById('setting');
 let closeElement = document.getElementById('close');
 let listElement = document.getElementById('list');
 let searchElement = document.getElementById('search');
-let menu = new Menu();
 
-//创建右键菜单
+//菜单：显示和删除动态切换显示
+let menu = new Menu();
 menu.append(new MenuItem({
     label: 'open', click() {
-        ipcRenderer.send('item-create', item);
+        ipcRenderer.send('create-window-item', item);
     }
 }));
 menu.append(new MenuItem({
@@ -39,21 +38,25 @@ menu.append(new MenuItem({
 // 初始化list列表
 renderList(event, items);
 
-// user-comand区域事件监听
+// 用户命令事件监听
 addElement.onclick = itemCreate;
+
 settingElement.onclick = () => {
-    ipcRenderer.send('setting');
+    ipcRenderer.send('show-setting');
 };
+
 closeElement.onclick = () => {
     currentWindow.close();
 };
 
-listElement.addEventListener("dblclick", handleDoubleClick);// item双击open
-listElement.addEventListener("contextmenu", contentMenu);// item右键菜单open close del
-// search功能按照keyup绑定事件，触发查询操作，高亮查询内容，并过滤
-searchElement.addEventListener("input", matchItems);
+// 双击item打开itemWindow
+listElement.addEventListener("dblclick", handleDoubleClick);
 
-// 函数功能区
+// item右键菜单open close del
+listElement.addEventListener("contextmenu", showMenu, true);
+
+// 搜索功能，高亮查询内容
+searchElement.addEventListener("input", matchItems);
 
 // 函数功能：根据输入内容，查找复合要求的内容，高亮匹配词，重新渲染界面
 function matchItems(event) {
@@ -73,20 +76,21 @@ function matchItems(event) {
     renderList(event, matchItems, keyWord);
 }
 
-// 双击item事件
+// 双击打开item窗口
 function handleDoubleClick(event) {
     if (event.target.className !== "item") {
         return;
     }
     // 找到当前双击的item
     let item = findItemById(event.target.id);
-    ipcRenderer.send('item-create', item);
+    ipcRenderer.send('create-window-item', item);
 }
 
+// 由item数组渲染list列表
 function renderList(event, items, keyWord) {
     listElement.innerText = null;
     if (items) {
-        items.forEach(item => updateItem(event, item, keyWord));
+        items.forEach(item => renderItem(event, item, keyWord));
     } else {
         let div = document.createElement("div");
         div.innerText = '写点你的人生海浪吧！';
@@ -95,7 +99,8 @@ function renderList(event, items, keyWord) {
     }
 }
 
-function updateItem(event, item, keyWord) {
+// 由item属性，渲染item样式
+function renderItem(event, item, keyWord) {
     let element = document.getElementById(item.id);
 
     if (!element) {
@@ -103,7 +108,7 @@ function updateItem(event, item, keyWord) {
         listElement.append(element);
         element.id = item.id;
     }
-    
+
     // 是否打开状态
     if (item.open) {
         element.className = "item fold";
@@ -137,18 +142,26 @@ function calculateTime(agoTimestamp) {
     let ago = new Date(agoTimestamp);
 
     if (now.getFullYear() === ago.getFullYear() && now.getMonth() === ago.getMonth() && now.getDate() === ago.getDate()) {
-        return `${ago.getHours()}:${ago.getMinutes()}`;
+        let hours = ago.getHours();
+        let minutes = ago.getMinutes();
+        if (hours < 10) {
+            hours = `0${hours}`;
+        }
+        if (minutes<10) {
+            minutes = `0${minutes}`;
+        }
+        return `${hours}:${minutes}`;
     } else {
-        let days = Math.floor((nowTimestamp - agoTimestamp) / (24 * 3600 * 1000));
+        let days = Math.round((nowTimestamp - agoTimestamp) / (24 * 3600 * 1000));
         return `${days}天前`;
     }
 }
 
-// item右键单击事件
-function contentMenu(event) {
+// 动态显示操作菜单
+function showMenu(event) {
     event.preventDefault()
     // 非item的事件，不触发
-    if (event.target.className !== "item") {
+    if (event.target.className.indexOf("item") === -1) {
         return;
     }
 
@@ -166,7 +179,7 @@ function contentMenu(event) {
     menu.popup(currentWindow);
 }
 
-// 根据id查找当前正在操作的item，并返回引用
+// 根据id从main-process中查找item，返回其引用
 function findItemById(id) {
     let items = remote.getGlobal('items');
     let item = items.find(value => {
@@ -175,6 +188,7 @@ function findItemById(id) {
     return item;
 }
 
+// 函数功能：新建item数据对象，并将事件发送给main进程
 function itemCreate() {
     let item = {
         id: Date.now(),
@@ -190,12 +204,12 @@ function itemCreate() {
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
     }
-    ipcRenderer.send('item-create', item);
+    ipcRenderer.send('create-window-item', item);
     ipcRenderer.send('item-update', item);
 }
 
+// 新建窗口偏移设置，防止重叠窗口
 function getPosition() {
-    // 窗口偏移index设置
     offsetIndex++;
     if (offsetIndex > Common.ITEM_OFFSET.length - 1) {
         offsetIndex = 0;
@@ -231,6 +245,5 @@ function getPosition() {
     return position;
 }
 
-// 根据事件渲染列表界面
+// 刷新list页面
 ipcRenderer.on('list-update', renderList);
-ipcRenderer.on('update-item', updateItem)

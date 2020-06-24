@@ -40,31 +40,32 @@ class App {
     }
 
     initIpc() {
+        // 从数据库读取数据，绑定对象引用
         ipcMain.on('load-data', event => {
-            // 本地数据库读取数据-同步-引用绑定
             global.setting = settingDB.value();
             global.items = itemDB.get('items').value();
 
-            let openitems = global.items.filter(item => {
+            let items = global.items.filter(item => {
                 return item.open === true;
             });
 
-            openitems.forEach(item => {
+            // 创建显示窗口
+            items.forEach(item => {
                 this.createItemWindow(item)
-            })
+            });
 
-            // 打开list窗口，如目前没有open的item窗口组，则忽略list窗口状态，直接打开
-            if (openitems.length == 0) {
+            // 根据设置选项决定是否打开list窗口，如没有open的item窗口组，则直接打开
+            if (items.length == 0) {
                 this.createListWindow();
             } else if (global.setting.open) {
                 this.createListWindow();
-            }
+            };
 
             // 读取完毕关闭数据载入窗口
             this.loadWindow.close();
         })
 
-        ipcMain.on('item-create', (event, item) => {
+        ipcMain.on('create-window-item', (event, item) => {
             this.createItemWindow(item);
             if (this.listWindow) {
                 this.listWindow.webContents.send('list-update', global.items);
@@ -156,6 +157,7 @@ class App {
             }
         });
 
+        // 显示list页面
         ipcMain.on('show-list', () => {
             if (this.listWindow) {
                 this.listWindow.focus();
@@ -164,7 +166,7 @@ class App {
             }
         });
 
-        ipcMain.on('setting', () => {
+        ipcMain.on('show-setting', () => {
             this.listWindow.loadURL(common.WINDOW_URL.setting);
         });
 
@@ -220,6 +222,7 @@ class App {
     }
 
     createItemWindow(item) {
+        // 遍历寻找当前窗口对象，如果窗口已经创建，则聚焦此窗口
         let itemWindow = this.itemWindows.find(value => {
             return value.item.id === item.id;
         });
@@ -234,17 +237,24 @@ class App {
 
         itemWindow = new ItemWindow(item);
 
-        // 窗口引用
+        // 内存中的窗口数组管理
         this.itemWindows.unshift(itemWindow);
 
-        // pin
+        // 窗口置顶
         itemWindow.setAlwaysOnTop(item.pin)
 
+        // 窗口显示
         itemWindow.once('ready-to-show', () => {
             itemWindow.show();
         });
 
+        // 窗口关闭
         itemWindow.on('closed', () => {
+            // // 更新item对象状态
+            // let item = itemWindow.item;
+            // item.open = false;
+            // this.modifyItemDB(item);
+
             // 窗口关闭后，删除该窗口的在窗口集合中的引用
             let index = this.itemWindows.findIndex(value => {
                 return value.item.id === itemWindow.item.id;
@@ -266,20 +276,36 @@ class App {
         itemWindow.on('move', () => {
             let item = itemWindow.item;
             item.position = itemWindow.getPosition();
-            itemDB.get('items')
-                .find({ id: item.id })
-                .assign(item)
-                .write();
+            this.modifyItemDB(item);
         });
 
         itemWindow.on('resize', () => {
             let item = itemWindow.item;
             item.size = itemWindow.getSize();
+            this.modifyItemDB(item);
+        });
+
+        this.modifyItemDB(item);
+
+    }
+
+    // 查找，找到更新，找不到插入
+    modifyItemDB(item) {
+        let result = itemDB
+            .get('items')
+            .find({ id: item.id })
+            .value();
+
+        if (result) {
             itemDB.get('items')
                 .find({ id: item.id })
                 .assign(item)
                 .write();
-        });
+        } else {
+            itemDB.get('items')
+                .push(item)
+                .write()
+        }
     }
 }
 

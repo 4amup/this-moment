@@ -11,6 +11,7 @@ class LoadWindow extends BrowserWindow {
             width: Common.WINDOW_SIZE_LOAD.width,
             height: Common.WINDOW_SIZE_LOAD.height,
             titleBarStyle: 'hidden-inset',
+            enableRemoteModule: true,
             webPreferences: {
                 nodeIntegration: true,
             },

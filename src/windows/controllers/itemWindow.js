@@ -12,6 +12,7 @@ class ItemWindow extends BrowserWindow {
             width: item.size[0],
             height: item.size[1],
             titleBarStyle: 'hidden-inset',
+            enableRemoteModule: true,
             webPreferences: {
                 nodeIntegration: true,
             },
