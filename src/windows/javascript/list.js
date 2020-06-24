@@ -140,6 +140,7 @@ function calculateTime(agoTimestamp) {
     let nowTimestamp = Date.now();
     let now = new Date(nowTimestamp);
     let ago = new Date(agoTimestamp);
+    let dif = nowTimestamp - agoTimestamp;
 
     if (now.getFullYear() === ago.getFullYear() && now.getMonth() === ago.getMonth() && now.getDate() === ago.getDate()) {
         let hours = ago.getHours();
@@ -147,12 +148,15 @@ function calculateTime(agoTimestamp) {
         if (hours < 10) {
             hours = `0${hours}`;
         }
-        if (minutes<10) {
+        if (minutes < 10) {
             minutes = `0${minutes}`;
         }
         return `${hours}:${minutes}`;
+    } else if (dif < 24 *3600 * 1000) {
+        let hours = Math.round(dif / (3600 * 1000));
+        return `${hours}小时前`;
     } else {
-        let days = Math.round((nowTimestamp - agoTimestamp) / (24 * 3600 * 1000));
+        let days = Math.round(dif / (24 * 3600 * 1000));
         return `${days}天前`;
     }
 }
