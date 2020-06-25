@@ -65,47 +65,25 @@ class App {
             this.loadWindow.close();
         })
 
-        ipcMain.on('create-window-item', (event, item) => {
+        // 创建item窗口对象
+        ipcMain.on('open-item', (event, item) => {
             this.createItemWindow(item);
-            if (this.listWindow) {
-                this.listWindow.webContents.send('list-update', global.items);
-            }
+            if (this.listWindow) this.listWindow.webContents.send('render-item', item);
         });
 
-        ipcMain.on('item-update', (event, item) => {
-
-            // 查找，找到更新，找不到插入
-            let result = itemDB
-                .get('items')
-                .find({ id: item.id })
-                .value();
-
-            if (result) {//update
-                itemDB.get('items')
-                    .find({ id: item.id })
-                    .assign(item)
-                    .write();
-            } else {//insert
-                itemDB.get('items')
-                    .push(item)
-                    .write()
-            }
-
-            if (this.listWindow) {
-                this.listWindow.webContents.send('list-update', global.items);
-            }
-        });
-
-        // 窗口属性改变
-        ipcMain.on('itemWindow-change', (event, item) => {
+        // 更新item窗口对象显示状态
+        ipcMain.on('update-window-item', (event, item) => {
             let itemWindow = this.itemWindows.find(value => {
                 return value.item.id === item.id;
             });
 
             itemWindow.setAlwaysOnTop(item.pin);
+
+            this.modifyItemDB(item);
         });
 
-        ipcMain.on('item-close', (event, item) => {
+        // 关闭item窗口显示
+        ipcMain.on('close-item', (event, item) => {
             // 关闭对应窗口
             let itemWindow = this.itemWindows.find(value => {
                 return value.item.id === item.id;
@@ -115,30 +93,18 @@ class App {
 
             item.open = false;
 
-            let flag = itemDB.get('items')
-                .find({ id: item.id })
-                .value();
-
             // 如果content变成空的，就删除这个item
-            if (!item.content) {
-                if (flag) {
-                    itemDB.get('items')
-                        .remove({ id: item.id })
-                        .write();
-                }
+            if (item.content) {
+                this.modifyItemDB(item);
+                this.listWindow.webContents.send('render-item', item);
             } else {
-                itemDB.get('items')
-                    .find({ id: item.id })
-                    .assign(item)
-                    .write();
-            }
-
-            if (this.listWindow) {
-                this.listWindow.webContents.send('list-update', global.items);
+                this.deleteItemDB(item);
+                this.listWindow.webContents.send('remove-item', item);
             }
         });
 
-        ipcMain.on('item-delete', (event, item) => {
+        // 删除item对象并关闭对应窗口
+        ipcMain.on('delete-item', (event, item) => {
             // 关闭对应窗口
             let itemWindow = this.itemWindows.find(value => {
                 return value.item.id === item.id;
@@ -147,14 +113,10 @@ class App {
             if (itemWindow) itemWindow.close();
 
             // 删除item
-            itemDB.get('items')
-                .remove({ id: item.id })
-                .write();
+            this.deleteItemDB(item);
 
             // 更新list视图
-            if (this.listWindow) {
-                this.listWindow.webContents.send('list-update', global.items);
-            }
+            if (this.listWindow) this.listWindow.webContents.send('remove-item', item);
         });
 
         // 显示list页面
@@ -166,28 +128,38 @@ class App {
             }
         });
 
+        // 在list页面切换setting页面
         ipcMain.on('show-setting', () => {
             this.listWindow.loadURL(common.WINDOW_URL.setting);
         });
 
+        // 切换回list页面
         ipcMain.on('back', () => {
             this.listWindow.loadURL(common.WINDOW_URL.list);
         });
 
-        ipcMain.on('setting-login', (event, state) => {
-            settingDB.set('login', state)
-                .write();
-            global.setting.login = state;
-            app.setLoginItemSettings({
-                openAtLogin: state,
-            });
+        // 设置项改变
+        ipcMain.on('update-setting', (event, setting) => {
+            settingDB.setState(setting).write();
+            global.setting = setting;
+
+            if (setting.login) {
+                app.setLoginItemSettings({
+                    openAtLogin: true,
+                });
+            } else {
+                app.setLoginItemSettings({
+                    openAtLogin: false,
+                });
+            }
+            
         });
 
-        ipcMain.on('setting-open', (event, state) => {
-            settingDB.set('open', state)
-                .write();
-            global.setting.open = state;
-        });
+        ipcMain.on('sync-items', event => {
+            if (this.listWindow) {
+                this.listWindow.webContents.send('sync-items', global.items);
+            }
+        })
     }
 
     createLoadWindow() {
@@ -250,11 +222,6 @@ class App {
 
         // 窗口关闭
         itemWindow.on('closed', () => {
-            // // 更新item对象状态
-            // let item = itemWindow.item;
-            // item.open = false;
-            // this.modifyItemDB(item);
-
             // 窗口关闭后，删除该窗口的在窗口集合中的引用
             let index = this.itemWindows.findIndex(value => {
                 return value.item.id === itemWindow.item.id;
@@ -307,6 +274,24 @@ class App {
                 .write()
         }
     }
-}
 
+    // 删除，找到删除，找不到无效
+    deleteItemDB(item) {
+        let result = itemDB.get('items')
+            .find({ id: item.id })
+            .value();
+
+        // 如果content变成空的，就删除这个item
+        if (result) {
+            itemDB.get('items')
+                .remove({ id: item.id })
+                .write();
+        }
+    }
+
+    // 设置setup数据保存
+    saveSetting(setting, boolean) {
+        settingDB.set(setting, boolean);
+    }
+}
 new App().init()

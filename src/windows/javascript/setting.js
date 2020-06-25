@@ -11,10 +11,10 @@ let login = document.getElementById('login');
 let open = document.getElementById('open');
 let backElement = document.getElementById('back');
 let closeElement = document.getElementById('close');
-let loginState = setting.login ? true : false;
-let openState = setting.open ? true : false;
-login.checked = loginState;
-open.checked = openState;
+setting.login = setting.login ? true : false;
+setting.open = setting.open ? true : false;
+login.checked = setting.login;
+open.checked = setting.open;
 
 // user-comand区域事件监听
 backElement.addEventListener('click', () => {
@@ -31,12 +31,12 @@ settingCommand.addEventListener("input", event => {
 
     switch (item.id) {
         case "login":
-            loginState = document.getElementById(item.id).checked;
-            ipcRenderer.send('setting-login', loginState);
+            setting.login = document.getElementById(item.id).checked;
+            ipcRenderer.send('update-setting', setting);
             break;
         case "open":
-            openState = document.getElementById(item.id).checked;
-            ipcRenderer.send('setting-open', openState);
+            setting.open = document.getElementById(item.id).checked;
+            ipcRenderer.send('update-setting', setting);
             break;
         default:
             break;

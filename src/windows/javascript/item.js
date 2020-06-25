@@ -59,13 +59,13 @@ setInterval(() => {
 
 //----------------------------user-comand区域事件监听---------------------------------------
 exitElement.addEventListener('click', event => {
-    ipcRenderer.send('item-close', item);
+    ipcRenderer.send('close-item', item);
 });
 
 addElement.addEventListener('click', itemCreate);
 
 deleteElement.addEventListener('click', event => {
-    ipcRenderer.send('item-delete', item);
+    ipcRenderer.send('delete-item', item);
 });
 
 menuElement.addEventListener('click', event => {
@@ -81,8 +81,7 @@ pinElement.addEventListener('click', event => {
         item.pin = true;
         pinElement.style.background = 'grey';
     }
-    ipcRenderer.send('itemWindow-change', item);
-    ipcRenderer.send('item-update', item);
+    ipcRenderer.send('update-window-item', item);
 });
 
 // 点击内容区域，自动隐藏
@@ -104,7 +103,7 @@ userSetting.addEventListener("click", event => {
     if (className === "setting-item") {
         switch (setting) {
             case "delete":
-                ipcRenderer.send('item-delete', item);
+                ipcRenderer.send('delete-item', item);
                 break;
             case "show-list":
                 ipcRenderer.send('show-list');
@@ -115,7 +114,7 @@ userSetting.addEventListener("click", event => {
     } else if (className === "color-pick") {
         container.style.background = setting;
         item.color = setting;
-        ipcRenderer.send('item-update', item);
+        ipcRenderer.send('update-item', item);
     }
     userSetting.className = 'setting-init';
 });
@@ -150,7 +149,7 @@ function updateItem() {
     item.content_time = content_time.value;
     item.content_type = getContenType('content-type');
     // 传送数据回主进程
-    ipcRenderer.send('item-update', item);
+    ipcRenderer.send('update-item', item);
 }
 
 // 添加新窗口
@@ -185,8 +184,8 @@ function itemCreate() {
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
     }
-    ipcRenderer.send('create-window-item', item);
-    ipcRenderer.send('item-update', item);
+    ipcRenderer.send('open-item', item);
+    ipcRenderer.send('update-item', item);
 }
 
 // 根据input渲染tip，content还有1年3个月1天23小时2分就开始，content已经过去345天2分

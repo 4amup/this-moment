@@ -8,12 +8,11 @@ const Common = require('../../lib/common');
 let offsetIndex = -1;
 
 // 读取全局数据
-let items = remote.getGlobal('items');
+let items = null;
 let item = null;
 
-let addElement = document.getElementById('add');
-let settingElement = document.getElementById('setting');
-let closeElement = document.getElementById('close');
+// 页面元素引用
+let userCommand = document.getElementById('user-command');
 let listElement = document.getElementById('list');
 let searchElement = document.getElementById('search');
 
@@ -21,76 +20,99 @@ let searchElement = document.getElementById('search');
 let menu = new Menu();
 menu.append(new MenuItem({
     label: 'open', click() {
-        ipcRenderer.send('create-window-item', item);
+        ipcRenderer.send('open-item', item);
     }
 }));
 menu.append(new MenuItem({
     label: 'close', click() {
-        ipcRenderer.send('item-close', item);
+        ipcRenderer.send('close-item', item);
     }
 }));
 menu.append(new MenuItem({
     label: 'delete', click() {
-        ipcRenderer.send('item-delete', item);
+        ipcRenderer.send('delete-item', item);
     }
 }));
 
 // 初始化list列表
-renderList(event, items);
+renderList();
 
 // 用户命令事件监听
-addElement.onclick = itemCreate;
-
-settingElement.onclick = () => {
-    ipcRenderer.send('show-setting');
-};
-
-closeElement.onclick = () => {
-    currentWindow.close();
-};
+userCommand.addEventListener('click', handleUserCommand);
 
 // 双击item打开itemWindow
 listElement.addEventListener("dblclick", handleDoubleClick);
 
 // item右键菜单open close del
-listElement.addEventListener("contextmenu", showMenu, true);
+listElement.addEventListener("contextmenu", showMenu);
 
 // 搜索功能，高亮查询内容
 searchElement.addEventListener("input", matchItems);
 
-// 函数功能：根据输入内容，查找复合要求的内容，高亮匹配词，重新渲染界面
-function matchItems(event) {
-    let keyWord = searchElement.value;
-    let matchItem;
-    if (keyWord == "") {
-        matchItem = items;
+// userCommand事件处理
+function handleUserCommand(event) {
+    if (event.target.nodeName.toLowerCase() !== 'button') {
+        return;
     }
 
+    switch (event.target.id) {
+        case 'add':
+            itemCreate();
+            break;
+        case 'setting':
+            ipcRenderer.send('show-setting');
+            break;
+        case 'close':
+            currentWindow.close();
+            break;
+        default:
+            break;
+    }
+}
+
+// 函数功能：根据输入内容，查找复合要求的内容，高亮匹配词，重新渲染界面
+function matchItems(event) {
+    // 同步数据及清空
+    items = remote.getGlobal('items');
+    listElement.innerText = null;
+
+    let matchItems = items;
+    let keyWord = searchElement.value;
+
     // 搜索内容
-    let matchItems = items.filter(item => {
+    matchItems = items.filter(item => {
         let matchIndex = item.content.indexOf(keyWord);
         return matchIndex > -1;
-    })
+    });
 
     // 根据查询结果渲染list列表
-    renderList(event, matchItems, keyWord);
+
+    if (matchItems.length > 0) {
+        matchItems.forEach(item => {
+            renderItem(event, item, keyWord);
+        });
+    } else {
+        let div = document.createElement("div");
+        div.innerText = '无匹配结果！';
+        listElement.appendChild(div);
+    }
 }
 
 // 双击打开item窗口
 function handleDoubleClick(event) {
-    if (event.target.className !== "item") {
-        return;
-    }
     // 找到当前双击的item
     let item = findItemById(event.target.id);
-    ipcRenderer.send('create-window-item', item);
+    if (item) ipcRenderer.send('open-item', item);
 }
 
 // 由item数组渲染list列表
-function renderList(event, items, keyWord) {
+function renderList() {
+    // 同步数据及清空
+    items = remote.getGlobal('items');
     listElement.innerText = null;
-    if (items) {
-        items.forEach(item => renderItem(event, item, keyWord));
+
+    if (items.length > 0) {
+        items.forEach(item => renderItem(event, item));
     } else {
         let div = document.createElement("div");
         div.innerText = '写点你的人生海浪吧！';
@@ -98,6 +120,19 @@ function renderList(event, items, keyWord) {
 
     }
 }
+
+// function renderList(event, items, keyWord) {
+//     listElement.innerText = null;
+//     if (items) {
+//         items.forEach(item => renderItem(event, item, keyWord));
+//     } else {
+//         let div = document.createElement("div");
+//         div.innerText = '写点你的人生海浪吧！';
+//         listElement.appendChild(div);
+
+//     }
+// }
+
 
 // 由item属性，渲染item样式
 function renderItem(event, item, keyWord) {
@@ -135,6 +170,14 @@ function renderItem(event, item, keyWord) {
     element.innerHTML = innerHTML;
 }
 
+// 根据id删除item节点
+function removeItem(event, item) {
+    let element = document.getElementById(item.id);
+    if (element) {
+        listElement.removeChild(element);
+    }
+}
+
 // 计算时间，返回字符串，如果是今天，返回具体时间，否则返回5天前
 function calculateTime(agoTimestamp) {
     let nowTimestamp = Date.now();
@@ -152,7 +195,7 @@ function calculateTime(agoTimestamp) {
             minutes = `0${minutes}`;
         }
         return `${hours}:${minutes}`;
-    } else if (dif < 24 *3600 * 1000) {
+    } else if (dif < 24 * 3600 * 1000) {
         let hours = Math.round(dif / (3600 * 1000));
         return `${hours}小时前`;
     } else {
@@ -208,8 +251,8 @@ function itemCreate() {
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
     }
-    ipcRenderer.send('create-window-item', item);
-    ipcRenderer.send('item-update', item);
+    ipcRenderer.send('open-item', item);
+    ipcRenderer.send('update-item', item);
 }
 
 // 新建窗口偏移设置，防止重叠窗口
@@ -249,5 +292,8 @@ function getPosition() {
     return position;
 }
 
-// 刷新list页面
-ipcRenderer.on('list-update', renderList);
+// 更新单个item
+ipcRenderer.on('render-item', renderItem);
+
+// 移除单个item
+ipcRenderer.on('remove-item', removeItem);
