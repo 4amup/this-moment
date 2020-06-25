@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件委托功能测试</title>
+</head>
+
+<body>
+    <div id="list">
+        <div class="item">
+            <time>22:11</time>
+            <p>示例数据1</p>
+        </div>
+        <div class="item">
+            <time>22:11</time>
+            <p>示例数据2</p>
+        </div>
+    </div>
+    <script type="text/javascript">
+        let list = document.getElementById('list');
+        list.addEventListener('click', (event) => {
+            if (event.target.nodeName.toLowerCase() === 'div') {
+                console.log('点击div');
+            }
+        },true)
+    </script>
+    <style>
+        .item {
+            background-color: aqua;
+        }
+        .item time {
+            background-color: bisque;
+        }
+        .item p {
+            background-color: cornflowerblue;
+        }
+    </style>
+</body>
+
+</html>
