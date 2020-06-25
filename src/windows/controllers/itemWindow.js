@@ -11,6 +11,8 @@ class ItemWindow extends BrowserWindow {
             frame: false,
             width: item.size[0],
             height: item.size[1],
+            minWidth: Common.WINDOW_SIZE_ITEM.minWidth,
+            minHeight: Common.WINDOW_SIZE_ITEM.minHeight,
             titleBarStyle: 'hidden-inset',
             enableRemoteModule: true,
             webPreferences: {

@@ -21,12 +21,20 @@
       <button id="pin">
         <span class="iconfont icon-pin"></span>
       </button>
-      <button id="exit">
+      <button id="close">
         <span class="iconfont icon-close"></span>
       </button>
     </div>
-    <div id="user-setting" class="setting-init">
-      <div id="color-palette" class="setting-item">待渲染</div>
+    <div id="user-setting">
+      <div id="color-palette" class="setting-item">
+        <div class="color-item">
+          <span class="iconfont icon-selected"></span>
+        </div>
+        <div class="color-item">
+        </div>
+        <div class="color-item">
+        </div>
+      </div>
       <div id="show-list" class="setting-item">
         <span class="iconfont icon-list"></span>
       </div>
@@ -34,12 +42,16 @@
         <span class="iconfont icon-del"></span>
       </div>
     </div>
+    <div id="message">此刻距离退休还有255天</div>
     <div id="content-container">
-      <p id="tip">根据下面内容渲染</p>
+      <label for="content">事件</label>
       <input type="text" id="content" placeholder="记下生命中的重要时刻...">
       <br>
+      <label for="content-date">时刻</label>
       <input type="date" name="" id="content-date">
       <input type="time" name="" id="content-time">
+      <br>
+      <label for="">显示方式</label>
       <br>
       <input type="radio" name="content-type" id="second">秒<br>
       <input type="radio" name="content-type" id="minute">分<br>

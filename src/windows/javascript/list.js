@@ -121,19 +121,6 @@ function renderList() {
     }
 }
 
-// function renderList(event, items, keyWord) {
-//     listElement.innerText = null;
-//     if (items) {
-//         items.forEach(item => renderItem(event, item, keyWord));
-//     } else {
-//         let div = document.createElement("div");
-//         div.innerText = '写点你的人生海浪吧！';
-//         listElement.appendChild(div);
-
-//     }
-// }
-
-
 // 由item属性，渲染item样式
 function renderItem(event, item, keyWord) {
     let element = document.getElementById(item.id);
@@ -252,7 +239,6 @@ function itemCreate() {
         size: Common.WINDOW_SIZE_ITEM,
     }
     ipcRenderer.send('open-item', item);
-    ipcRenderer.send('update-item', item);
 }
 
 // 新建窗口偏移设置，防止重叠窗口

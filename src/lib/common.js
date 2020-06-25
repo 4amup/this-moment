@@ -16,15 +16,19 @@ class Common {
     static WINDOW_SIZE_LIST = {
         width: 800,
         height: 600,
+        minWidth: 200,
+        minheight: 200
     };
     static WINDOW_SIZE_SETTING = {
         width: 800,
         height: 600,
     };
-    static WINDOW_SIZE_ITEM = [
-        400,
-        400,
-    ];
+    static WINDOW_SIZE_ITEM = {
+        width: 400,
+        height: 400,
+        minWidth: 200,
+        minHeight: 200
+    };
     static WINDOW_URL = {
         load: `file://${path.join(__dirname, '/../windows/views/load.html')}`,
         list: `file://${path.join(__dirname, '/../windows/views/list.html')}`,

@@ -72,7 +72,7 @@ class App {
         });
 
         // 更新item窗口对象显示状态
-        ipcMain.on('update-window-item', (event, item) => {
+        ipcMain.on('update-item', (event, item) => {
             let itemWindow = this.itemWindows.find(value => {
                 return value.item.id === item.id;
             });
@@ -233,11 +233,11 @@ class App {
         });
 
         itemWindow.on('focus', () => {
-            itemWindow.webContents.send('item-focus');
+            itemWindow.webContents.send('item-change');
         });
 
         itemWindow.on('blur', () => {
-            itemWindow.webContents.send('item-blur');
+            itemWindow.webContents.send('item-change');
         });
 
         itemWindow.on('move', () => {

@@ -10,96 +10,77 @@ let item = currentWindow.item;
 let offsetIndex = -1;
 
 // 全局dom变量
-let userSetting = document.getElementById('user-setting');
-let colorPalette = document.getElementById('color-palette');
 let userComand = document.getElementById('user-command');
-let addElement = document.getElementById('add');
-let menuElement = document.getElementById('menu');
-let exitElement = document.getElementById('exit');
-let deleteElement = document.getElementById('delete');
-let pinElement = document.getElementById('pin');
-let tip = document.getElementById('tip');
+let userSetting = document.getElementById('user-setting');
+
+let contentElement = document.getElementById('content-container');
+let messageElement = document.getElementById('message');
 let container = document.getElementById('container');
-let contentContainer = document.getElementById('content-container');
-let content = document.getElementById('content');//内容-事件
-let content_date = document.getElementById('content-date');//内容-日期
-let content_time = document.getElementById('content-time');//内容-时间
-let content_type_checked = document.getElementById(item.content_type);//选中的radio
+let content = document.getElementById('content');
+let content_date = document.getElementById('content-date');
+let content_time = document.getElementById('content-time');
+let content_type_checked = document.getElementById(item.content_type);
+let pinElement = document.getElementById('pin');
 
-// 动态生成user-setting区域
-colorPalette.innerText = null;
-Common.ITEM_COLOR.forEach(element => {
-    let div = document.createElement('div');
-    div.id = element;
-    div.className = 'color-pick';
-    div.innerText = element;
-    div.style.background = element;
-    colorPalette.appendChild(div);
-});
+// 初始化生成调色板
+renderPalette();
 
-
-// 根据数据对象item->view
-content.value = item.content;
-content_date.value = item.content_date;
-content_time.value = item.content_time;
-container.style.background = item.color;
-if (item.pin) {
-    pinElement.style.background = 'grey';
-} else {
-    pinElement.style.background = '';
-};
-
-content_type_checked.checked = true;
+//初始化窗口内容和样式
+renderItem();
 
 // 先直接执行，然后按秒刷新
-tip.innerText = renderTip(item)
+messageElement.innerText = renderMessage(item)
 setInterval(() => {
-    tip.innerText = renderTip(item)
+    messageElement.innerText = renderMessage(item)
 }, 1000);
 
-//----------------------------user-comand区域事件监听---------------------------------------
-exitElement.addEventListener('click', event => {
-    ipcRenderer.send('close-item', item);
-});
-
-addElement.addEventListener('click', itemCreate);
-
-deleteElement.addEventListener('click', event => {
-    ipcRenderer.send('delete-item', item);
-});
-
-menuElement.addEventListener('click', event => {
+//user-comand区域事件监听
+userComand.addEventListener('click', event => {
     event.stopPropagation();
-    userSetting.className = 'setting-show';
-});
-
-pinElement.addEventListener('click', event => {
-    if (item.pin) {
-        item.pin = false;
-        pinElement.style.background = '';
-    } else {
-        item.pin = true;
-        pinElement.style.background = 'grey';
+    switch (event.target.id) {
+        case 'add':
+            itemCreate();
+            break;
+        case 'close':
+            ipcRenderer.send('close-item', item);
+            break;
+        case 'menu':
+            userSetting.style.visibility = 'visible';
+            userComand.style.visibility = 'hidden';
+            break;
+        case 'pin':
+            if (item.pin) {
+                item.pin = false;
+            } else {
+                item.pin = true;
+            }
+            renderItem();
+            ipcRenderer.send('update-item', item);
+            break;
+        default:
+            break;
     }
-    ipcRenderer.send('update-window-item', item);
-});
+})
 
 // 点击内容区域，自动隐藏
-container.addEventListener("click", event => {
-    userSetting.className = 'setting-init';
+document.addEventListener("click", event => {
+    userSetting.style.visibility = 'hidden';
+    userComand.style.visibility = 'visible';
+    contentElement.style.visibility = 'visible';
 });
 
+// 隐藏菜单功能设置
 userSetting.addEventListener("click", event => {
-    event.stopPropagation();
     let className = event.target.className;
-    if (className !== "setting-item" && className !== "color-pick") {
+
+    if (className !== "setting-item" && className !== "color-item") {
         return;
     }
 
     // 设置值
     let setting = event.target.id;
 
-    // 设置功能
+    // 用户命令
     if (className === "setting-item") {
         switch (setting) {
             case "delete":
@@ -111,48 +92,83 @@ userSetting.addEventListener("click", event => {
             default:
                 break;
         };
-    } else if (className === "color-pick") {
+    }
+
+    // item属性设置
+    if (className === "color-item") {
         container.style.background = setting;
         item.color = setting;
         ipcRenderer.send('update-item', item);
     }
-    userSetting.className = 'setting-init';
+
+    // 点击后隐藏menu
+    userSetting.height = '0';
 });
 
 
 // 自动保存：监听输入时自动保存
-contentContainer.addEventListener("input", updateItem);
+contentElement.addEventListener("input", updateItem);
 
-// 初始化工具栏可见性
-if (currentWindow.isFocused()) {
-    userComand.style.visibility = 'visible';
-} else {
-    userComand.style.visibility = 'hidden';
+// 功能：根据主数据生成颜色选择面板
+function renderPalette() {
+    let colorPalette = document.getElementById('color-palette');
+    colorPalette.innerText = null;
+    Common.ITEM_COLOR.forEach(color => {
+        let div = document.createElement('div');
+        div.id = color;
+        div.className = 'color-item';
+        div.style.background = color;
+        colorPalette.appendChild(div);
+    });
 }
 
-// 动态改变工具栏可见性
-ipcRenderer.on('item-focus', () => {
-    userComand.style.visibility = 'visible';
-});
+// 功能：渲染item窗口
+function renderItem(event) {
+    // 内容渲染
+    content.value = item.content;
+    content_date.value = item.content_date;
+    content_time.value = item.content_time;
+    container.style.background = item.color;
+    content_type_checked.checked = true;
 
-ipcRenderer.on('item-blur', () => {
-    userComand.style.visibility = 'hidden';
-    userSetting.className = 'setting-init';
-});
+    // 样式渲染
+    if (item.pin) {
+        pinElement.style.background = 'grey';
+    } else {
+        pinElement.style.background = '';
+    };
 
+    // 颜色选中勾选
+    let selectedColor = document.getElementById(item.color);
+    selectedColor.innerHTML = `<span class="iconfont icon-selected"></span>`;
 
-// 函数功能，更新当前窗口对象的事件信息
+    // 动态改变工具栏可见性
+    if (currentWindow.isFocused()) {
+        userComand.style.visibility = 'visible';
+        contentElement.style.visibility = 'visible';
+    } else {
+        userComand.style.visibility = 'hidden';
+        contentElement.style.visibility = 'hidden';
+    }
+
+    // 动态改变设置栏属性
+    userSetting.style.visibility = 'hidden';
+
+}
+
+// 功能：更新当前item数据
 function updateItem() {
     item.update_dt = Date.now();
     item.content = content.value;
     item.content_date = content_date.value;
     item.content_time = content_time.value;
     item.content_type = getContenType('content-type');
+
     // 传送数据回主进程
     ipcRenderer.send('update-item', item);
 }
 
-// 添加新窗口
+// 功能：添加新窗口
 function itemCreate() {
     // 窗口偏移index设置
     offsetIndex++;
@@ -188,9 +204,9 @@ function itemCreate() {
     ipcRenderer.send('update-item', item);
 }
 
-// 根据input渲染tip，content还有1年3个月1天23小时2分就开始，content已经过去345天2分
+// 根据input渲染message，content还有1年3个月1天23小时2分就开始，content已经过去345天2分
 // type 1按秒显示，2按分钟显示，3按小时显示，4按天显示，5按月显示，6按年显示；不传此参数，就是按秒显示
-function renderTip(item) {
+function renderMessage(item) {
     //有日期或时间才计算，否则仅仅显示content
     //只有日期，仅仅计算到天数
     //只有时间，按当天计算
@@ -227,7 +243,7 @@ function renderTip(item) {
 
     // 如果date和time有值，才继续，否则直接返回
     if (!timestamp) {
-        tip.innerText = item.content;
+        messageElement.innerText = item.content;
         return;
     } else {
         interval = timestamp - now;
@@ -397,3 +413,5 @@ function getPosition() {
     }
     return position;
 }
+
+ipcRenderer.on('item-change', renderItem);
