@@ -100,6 +100,11 @@ function matchItems(event) {
 
 // 双击打开item窗口
 function handleDoubleClick(event) {
+    if (event.target.className !== 'item') {
+        return;
+    }
+
+    event.stopPropagation();
     // 找到当前双击的item
     let item = findItemById(event.target.id);
     if (item) ipcRenderer.send('open-item', item);

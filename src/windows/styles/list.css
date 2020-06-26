@@ -5,6 +5,7 @@
 #container h1 {
     margin: 5px 0;
     font-size: 22px;
+    user-select: none;
 }
 
 #search {

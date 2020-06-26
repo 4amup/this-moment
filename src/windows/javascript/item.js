@@ -102,7 +102,7 @@ userSetting.addEventListener("click", event => {
     }
 
     // 点击后隐藏menu
-    userSetting.height = '0';
+    userSetting.style.visibility = 'hidden';
 });
 
 

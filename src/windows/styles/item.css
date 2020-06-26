@@ -64,6 +64,14 @@
     display: flex;
     flex-flow: row;
 }
+
 #color-palette .color-item {
     flex: 1;
+}
+
+#contenteditable {
+    display: inline-block;
+    height: 22px;
+    min-width: 20px;
+    max-width: 100px;
 }
