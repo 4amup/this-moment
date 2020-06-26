@@ -29,3 +29,7 @@ html, body {
     background-color: bisque;
 }
 
+#user-command button > * {
+    pointer-events: none;
+    user-select: none;
+}

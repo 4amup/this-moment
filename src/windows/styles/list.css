@@ -35,10 +35,7 @@
     user-select: none;
 }
 
-#user-command button > * {
-    pointer-events: none;
-    user-select: none;
-}
+
 
 #list div time {
     text-align: right;

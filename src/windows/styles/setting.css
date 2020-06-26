@@ -1,11 +1,15 @@
-/* 无边框需要拖动的hack写法 */
-body {
-    -webkit-app-region: drag;
+#setting-command {
+    display: flex;
+    flex-direction: column;
 }
-button, input {
-    -webkit-app-region: no-drag
+#setting-command .item-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
 }
 
-.item {
-    -webkit-app-region: no-drag
+#setting-command h4 {
+   margin: 0 20px;
+   padding: 0;
 }
