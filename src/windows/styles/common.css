@@ -26,7 +26,7 @@ html, body {
 }
 
 #user-command button:hover {
-    background-color: bisque;
+    background-color: lightgray;
 }
 
 #user-command button > * {

@@ -80,6 +80,8 @@ class App {
             itemWindow.setAlwaysOnTop(item.pin);
 
             this.modifyItemDB(item);
+
+            if (this.listWindow) this.listWindow.webContents.send('render-item', item);
         });
 
         // 关闭item窗口显示

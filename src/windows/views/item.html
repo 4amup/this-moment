@@ -42,24 +42,23 @@
         <span class="iconfont icon-del"></span>
       </div>
     </div>
-    <div id="message">此刻距离退休还有255天</div>
-    <div id="content-container">
-      <label for="content">事件</label>
-      
-      <span id="contenteditable" contenteditable="true">hell</span>
-      <input type="text" id="content" placeholder="记下生命中的重要时刻...">
-      <br>
-      <label for="content-date">时刻</label>
+    <div id="message">
+      <span id="content" contenteditable="true" spellcheck="false">事件占位</span>
+      <span id="caltext">还有|已过去255天</span>
+    </div>
+    <div id="time-command">
       <input type="date" name="" id="content-date">
       <input type="time" name="" id="content-time">
-      <br>
-      <label for="">显示方式</label>
-      <br>
-      <input type="radio" name="content-type" id="second">秒<br>
-      <input type="radio" name="content-type" id="minute">分<br>
-      <input type="radio" name="content-type" id="hour">小时<br>
-      <input type="radio" name="content-type" id="day">天<br>
-      <input type="radio" name="content-type" id="full">自然年月日时分秒<br>
+      <input type="radio" name="content-type" id="second">
+      <label for="second">秒</label>
+      <input type="radio" name="content-type" id="minute">
+      <label for="minute">分</label>
+      <input type="radio" name="content-type" id="hour">
+      <label for="hour">小时</label>
+      <input type="radio" name="content-type" id="day">
+      <label for="day">天</label>
+      <input type="radio" name="content-type" id="full">
+      <label for="full">自然</label>
     </div>
   </div>
   <script src="../javascript/item.js"></script>

@@ -10,11 +10,11 @@ let item = currentWindow.item;
 let offsetIndex = -1;
 
 // 全局dom变量
-let userComand = document.getElementById('user-command');
+let userCommand = document.getElementById('user-command');
 let userSetting = document.getElementById('user-setting');
-
-let contentElement = document.getElementById('content-container');
+let timeCommand = document.getElementById('time-command');
 let messageElement = document.getElementById('message');
+let caltextElement = document.getElementById('caltext');
 let container = document.getElementById('container');
 let content = document.getElementById('content');
 let content_date = document.getElementById('content-date');
@@ -29,13 +29,13 @@ renderPalette();
 renderItem();
 
 // 先直接执行，然后按秒刷新
-messageElement.innerText = renderMessage(item)
+caltextElement.innerText = renderMessage(item);
 setInterval(() => {
-    messageElement.innerText = renderMessage(item)
+    caltextElement.innerText = renderMessage(item);
 }, 1000);
 
 //user-comand区域事件监听
-userComand.addEventListener('click', event => {
+userCommand.addEventListener('click', event => {
     event.stopPropagation();
     switch (event.target.id) {
         case 'add':
@@ -46,7 +46,7 @@ userComand.addEventListener('click', event => {
             break;
         case 'menu':
             userSetting.style.visibility = 'visible';
-            userComand.style.visibility = 'hidden';
+            userCommand.style.visibility = 'hidden';
             break;
         case 'pin':
             if (item.pin) {
@@ -65,8 +65,7 @@ userComand.addEventListener('click', event => {
 // 点击内容区域，自动隐藏
 document.addEventListener("click", event => {
     userSetting.style.visibility = 'hidden';
-    userComand.style.visibility = 'visible';
-    contentElement.style.visibility = 'visible';
+    userCommand.style.visibility = 'visible';
 });
 
 // 隐藏菜单功能设置
@@ -107,7 +106,8 @@ userSetting.addEventListener("click", event => {
 
 
 // 自动保存：监听输入时自动保存
-contentElement.addEventListener("input", updateItem);
+content.addEventListener("input", updateItem);
+timeCommand.addEventListener("input", updateItem);
 
 // 功能：根据主数据生成颜色选择面板
 function renderPalette() {
@@ -125,7 +125,7 @@ function renderPalette() {
 // 功能：渲染item窗口
 function renderItem(event) {
     // 内容渲染
-    content.value = item.content;
+    content.innerText = item.content;
     content_date.value = item.content_date;
     content_time.value = item.content_time;
     container.style.background = item.color;
@@ -144,11 +144,11 @@ function renderItem(event) {
 
     // 动态改变工具栏可见性
     if (currentWindow.isFocused()) {
-        userComand.style.visibility = 'visible';
-        contentElement.style.visibility = 'visible';
+        userCommand.style.visibility = 'visible';
+        timeCommand.style.visibility = 'visible';
     } else {
-        userComand.style.visibility = 'hidden';
-        contentElement.style.visibility = 'hidden';
+        userCommand.style.visibility = 'hidden';
+        timeCommand.style.visibility = 'hidden';
     }
 
     // 动态改变设置栏属性
@@ -159,7 +159,7 @@ function renderItem(event) {
 // 功能：更新当前item数据
 function updateItem() {
     item.update_dt = Date.now();
-    item.content = content.value;
+    item.content = content.innerText;
     item.content_date = content_date.value;
     item.content_time = content_time.value;
     item.content_type = getContenType('content-type');
@@ -211,11 +211,11 @@ function renderMessage(item) {
     //只有日期，仅仅计算到天数
     //只有时间，按当天计算
     if (!item.content) {
-        return '海浪未起';
+        return '<--单击输入';
     }
 
     if (!item.content_date && !item.content_time) {
-        return item.content;
+        return '';
     }
 
     let interval;
@@ -271,9 +271,9 @@ function renderMessage(item) {
     }
 
     if (interval > 0) {//将来
-        return `距离${item.content}还有${intervalStr}`;
+        return `还有${intervalStr}`;
     } else {//过去
-        return `${item.content}已过去${intervalStr}`;
+        return `已过去${intervalStr}`;
     }
 
 }

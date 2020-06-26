@@ -100,7 +100,7 @@ function matchItems(event) {
 
 // 双击打开item窗口
 function handleDoubleClick(event) {
-    if (event.target.className !== 'item') {
+    if (event.target.className.indexOf('item') == -1) {
         return;
     }
 
