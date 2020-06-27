@@ -26,8 +26,8 @@ class Common {
     static WINDOW_SIZE_ITEM = {
         width: 400,
         height: 400,
-        minWidth: 200,
-        minHeight: 200
+        minWidth: 280,
+        minHeight: 120
     };
     static WINDOW_URL = {
         load: `file://${path.join(__dirname, '/../windows/views/load.html')}`,

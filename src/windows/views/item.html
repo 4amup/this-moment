@@ -10,7 +10,7 @@
 </head>
 
 <body>
-  <div id="container">
+  <div class="container">
     <div id="user-command">
       <button id="add">
         <span class="iconfont icon-add"></span>
@@ -28,7 +28,7 @@
     <div id="user-setting">
       <div id="color-palette" class="setting-item">
         <div class="color-item">
-          <span class="iconfont icon-selected"></span>
+          <span class="iconfont icon-selected" id="color-selected"></span>
         </div>
         <div class="color-item">
         </div>
@@ -36,10 +36,22 @@
         </div>
       </div>
       <div id="show-list" class="setting-item">
-        <span class="iconfont icon-list"></span>
+        <span class="iconfont icon-list"></span>显示列表
       </div>
       <div id='delete' class="setting-item">
-        <span class="iconfont icon-del"></span>
+        <span class="iconfont icon-del"></span>删除此刻
+      </div>
+      <div id="content-type" class="setting-item">
+        <input type="radio" name="content-type" id="second"><span>秒</span>
+        <!-- <label for="second">秒</label> -->
+        <input type="radio" name="content-type" id="minute">
+        <label for="minute">分</label>
+        <input type="radio" name="content-type" id="hour">
+        <label for="hour">小时</label>
+        <input type="radio" name="content-type" id="day">
+        <label for="day">天</label>
+        <input type="radio" name="content-type" id="full">
+        <label for="full">自然</label>
       </div>
     </div>
     <div id="message">
@@ -47,18 +59,8 @@
       <span id="caltext">还有|已过去255天</span>
     </div>
     <div id="time-command">
-      <input type="date" name="" id="content-date">
-      <input type="time" name="" id="content-time">
-      <input type="radio" name="content-type" id="second">
-      <label for="second">秒</label>
-      <input type="radio" name="content-type" id="minute">
-      <label for="minute">分</label>
-      <input type="radio" name="content-type" id="hour">
-      <label for="hour">小时</label>
-      <input type="radio" name="content-type" id="day">
-      <label for="day">天</label>
-      <input type="radio" name="content-type" id="full">
-      <label for="full">自然</label>
+      <input type="date" id="content-date">
+      <input type="time" id="content-time">
     </div>
   </div>
   <script src="../javascript/item.js"></script>

@@ -98,10 +98,10 @@ class App {
             // 如果content变成空的，就删除这个item
             if (item.content) {
                 this.modifyItemDB(item);
-                this.listWindow.webContents.send('render-item', item);
+                if (this.listWindow) this.listWindow.webContents.send('render-item', item);
             } else {
                 this.deleteItemDB(item);
-                this.listWindow.webContents.send('remove-item', item);
+                if (this.listWindow) this.listWindow.webContents.send('remove-item', item);
             }
         });
 

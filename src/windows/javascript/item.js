@@ -15,12 +15,13 @@ let userSetting = document.getElementById('user-setting');
 let timeCommand = document.getElementById('time-command');
 let messageElement = document.getElementById('message');
 let caltextElement = document.getElementById('caltext');
-let container = document.getElementById('container');
 let content = document.getElementById('content');
 let content_date = document.getElementById('content-date');
 let content_time = document.getElementById('content-time');
+let content_type = document.getElementById('content-type');
 let content_type_checked = document.getElementById(item.content_type);
 let pinElement = document.getElementById('pin');
+let colorSelected = document.getElementById(item.color);
 
 // 初始化生成调色板
 renderPalette();
@@ -95,8 +96,11 @@ userSetting.addEventListener("click", event => {
 
     // item属性设置
     if (className === "color-item") {
-        container.style.background = setting;
+        colorSelected.innerHTML = ``;
         item.color = setting;
+        colorSelected = document.getElementById(item.color);
+        colorSelected.innerHTML = `<span class="iconfont icon-selected"></span>`;
+        document.body.style.background = setting;
         ipcRenderer.send('update-item', item);
     }
 
@@ -107,6 +111,7 @@ userSetting.addEventListener("click", event => {
 
 // 自动保存：监听输入时自动保存
 content.addEventListener("input", updateItem);
+content_type.addEventListener("input", updateItem);
 timeCommand.addEventListener("input", updateItem);
 
 // 功能：根据主数据生成颜色选择面板
@@ -128,7 +133,7 @@ function renderItem(event) {
     content.innerText = item.content;
     content_date.value = item.content_date;
     content_time.value = item.content_time;
-    container.style.background = item.color;
+    document.body.style.background = item.color;
     content_type_checked.checked = true;
 
     // 样式渲染
@@ -139,8 +144,9 @@ function renderItem(event) {
     };
 
     // 颜色选中勾选
-    let selectedColor = document.getElementById(item.color);
-    selectedColor.innerHTML = `<span class="iconfont icon-selected"></span>`;
+    if (colorSelected) colorSelected.innerHTML = ``;
+    colorSelected = document.getElementById(item.color);
+    colorSelected.innerHTML = `<span class="iconfont icon-selected"></span>`;
 
     // 动态改变工具栏可见性
     if (currentWindow.isFocused()) {
