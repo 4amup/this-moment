@@ -217,7 +217,7 @@ function renderMessage(item) {
     //只有日期，仅仅计算到天数
     //只有时间，按当天计算
     if (!item.content) {
-        return '<--单击输入';
+        return '<-单击输入';
     }
 
     if (!item.content_date && !item.content_time) {

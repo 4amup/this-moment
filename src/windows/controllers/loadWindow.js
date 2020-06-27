@@ -6,18 +6,23 @@ const Common = require('../../lib/common')
 class LoadWindow extends BrowserWindow {
     constructor() {
         super({
-            title: Common.LIFE_OCEAN,
+            title: Common.TITLE,
             icon: path.join(__dirname, '../../../assets/icon.png'),
+            // frame: false,
+            center: true,
+            resizable: false,
+            movable: false,
             width: Common.WINDOW_SIZE_LOAD.width,
             height: Common.WINDOW_SIZE_LOAD.height,
-            titleBarStyle: 'hidden-inset',
+            titleBarStyle: 'hiddenInset',
             enableRemoteModule: true,
             webPreferences: {
                 nodeIntegration: true,
             },
+            show: false,
+            backgroundColor: '#2e2c29'
         });
         this.loadURL(Common.WINDOW_URL.load);
-        // if(Common.DEBUG_MODE) this.webContents.openDevTools();
     }
 }
 

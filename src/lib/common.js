@@ -3,29 +3,29 @@ const path = require('path')
 // 此类承载静态属性，抽象出常用属性
 class Common {
     static DEBUG_MODE = true;
-    // static DEBUG_MODE = false;
-    static LIFE_OCEAN = '人生海海';
+    static DEBUG_MODE = false;
+    static TITLE = '此刻';
     static WINDOW_SIZE = {
         width: 800,
         height: 600,
     };
     static WINDOW_SIZE_LOAD = {
         width: 800,
-        height: 600,
+        height: 400,
     };
     static WINDOW_SIZE_LIST = {
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 800,
         minWidth: 200,
         minheight: 200
     };
     static WINDOW_SIZE_SETTING = {
-        width: 800,
-        height: 600,
+        width: 400,
+        height: 800,
     };
     static WINDOW_SIZE_ITEM = {
-        width: 400,
-        height: 400,
+        width: 280,
+        height: 120,
         minWidth: 280,
         minHeight: 120
     };

@@ -196,6 +196,7 @@ class App {
         this.loadWindow.once('ready-to-show', () => {
             this.loadWindow.show();
         });
+        // this.loadWindow.show();
 
         this.loadWindow.on('closed', () => {
             this.loadWindow = null;

@@ -6,14 +6,13 @@ const { settingDB, itemDB } = require('../../lib/database');
 class ItemWindow extends BrowserWindow {
     constructor(item) {
         super({
-            title: Common.LIFE_OCEAN,
+            title: Common.TITLE,
             icon: path.join(__dirname, '../../../assets/icon.png'),
             frame: false,
-            width: item.size[0],
-            height: item.size[1],
+            width: item.size[0] ? item.size[0] : Common.WINDOW_SIZE_ITEM.width,
+            height: item.size[1] ? item.size[1] : Common.WINDOW_SIZE_ITEM.height,
             minWidth: Common.WINDOW_SIZE_ITEM.minWidth,
             minHeight: Common.WINDOW_SIZE_ITEM.minHeight,
-            titleBarStyle: 'hidden-inset',
             enableRemoteModule: true,
             webPreferences: {
                 nodeIntegration: true,

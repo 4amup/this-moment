@@ -5,16 +5,15 @@ const Common = require('../../lib/common')
 class ListWindow extends BrowserWindow {
     constructor() {
         super({
-            title: Common.LIFE_OCEAN,
+            title: Common.TITLE,
             icon: path.join(__dirname, '../../../assets/icon.png'),
             frame: false,
-            width: Common.WINDOW_SIZE_LOAD.width,
-            height: Common.WINDOW_SIZE_LOAD.height,
-            titleBarStyle: 'hidden-inset',
+            width: Common.WINDOW_SIZE_LIST.width,
+            height: Common.WINDOW_SIZE_LIST.height,
             enableRemoteModule: true,
             webPreferences: {
                 nodeIntegration: true,
-            }
+            },
         });
         this.setMenu(null);
         this.loadURL(Common.WINDOW_URL.list);
