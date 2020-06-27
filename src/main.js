@@ -1,6 +1,7 @@
-const { app, ipcMain } = require('electron');
+const { app, ipcMain, Tray, Menu } = require('electron');
+const path = require('path');
 const { settingDB, itemDB } = require('./lib/database')
-const common = require('./lib/common');
+const Common = require('./lib/common.js');
 global = require('./lib/global');
 
 const LoadWindow = require('./windows/controllers/loadWindow.js')
@@ -13,6 +14,7 @@ class App {
         this.loadWindow = null;
         this.listWindow = null;
         this.itemWindows = new Array();
+        this.tray = null;
     }
 
     init() {
@@ -30,11 +32,13 @@ class App {
 
     initApp() {
         app.on('ready', () => {
+            this.createTray();
             this.createLoadWindow();
         });
         app.on('window-all-closed', () => {
             if (process.platform !== 'darwin') {
-                app.quit()
+                return false;
+                // app.quit()
             }
         });
     }
@@ -132,12 +136,12 @@ class App {
 
         // 在list页面切换setting页面
         ipcMain.on('show-setting', () => {
-            this.listWindow.loadURL(common.WINDOW_URL.setting);
+            this.listWindow.loadURL(Common.WINDOW_URL.setting);
         });
 
         // 切换回list页面
         ipcMain.on('back', () => {
-            this.listWindow.loadURL(common.WINDOW_URL.list);
+            this.listWindow.loadURL(Common.WINDOW_URL.list);
         });
 
         // 设置项改变
@@ -154,7 +158,7 @@ class App {
                     openAtLogin: false,
                 });
             }
-            
+
         });
 
         ipcMain.on('sync-items', event => {
@@ -162,6 +166,29 @@ class App {
                 this.listWindow.webContents.send('sync-items', global.items);
             }
         })
+    }
+
+    createTray() {
+        this.tray = new Tray(path.join(__dirname, '../assets/icon.png'));
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: '显示列表',
+                type: 'normal',
+                click: () => {
+                    this.createListWindow();
+                },
+            },
+            { label: '退出程序', type: 'normal', role: 'quit' }
+        ])
+        this.tray.setToolTip('This is my application.')
+        this.tray.setContextMenu(contextMenu)
+        this.tray.on('click', () => {
+            if (this.listWindow) {
+                this.listWindow.close();
+            } else {
+                this.createListWindow();
+            }
+        });
     }
 
     createLoadWindow() {
@@ -176,6 +203,10 @@ class App {
     }
 
     createListWindow() {
+        if (this.listWindow) {
+            this.listWindow.focus();
+            return;
+        }
         this.listWindow = new ListWindow();
         this.listWindow.once('ready-to-show', () => {
             this.listWindow.show();
