@@ -6,7 +6,8 @@ class ListWindow extends BrowserWindow {
     constructor() {
         super({
             title: Common.TITLE,
-            icon: path.join(__dirname, '../../../assets/icon.png'),
+            // icon: path.join(__dirname, '../../../assets/icon.png'),
+            icon: path.join(__dirname, Common.ICON),
             frame: false,
             width: Common.WINDOW_SIZE_LIST.width,
             height: Common.WINDOW_SIZE_LIST.height,

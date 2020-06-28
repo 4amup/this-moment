@@ -5,6 +5,8 @@ class Common {
     static DEBUG_MODE = true;
     static DEBUG_MODE = false;
     static TITLE = '此刻';
+    static ICON = '../../../assets/icon.png';
+    static TRAY = '../assets/tray.png';
     static WINDOW_SIZE = {
         width: 800,
         height: 600,

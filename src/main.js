@@ -169,7 +169,7 @@ class App {
     }
 
     createTray() {
-        this.tray = new Tray(path.join(__dirname, '../assets/icon.png'));
+        this.tray = new Tray(path.join(__dirname, Common.TRAY));
         const contextMenu = Menu.buildFromTemplate([
             {
                 label: '显示列表',
