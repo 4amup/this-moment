@@ -5,8 +5,7 @@
   "main": "./src/main.js",
   "scripts": {
     "start": "electron .",
-    "pack": "electron-builder --dir",
-    "dist": "electron-builder"
+    "package": "electron-packager ./src now --platform=win32 --arch=x64 --icon=./assets/icon.ico --out=./build --asar --app-version=1.0.0 --overwrite"
   },
   "repository": "https://github.com/4amup/life-timer.git",
   "keywords": [],
@@ -14,41 +13,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^9.0.4",
-    "electron-builder": "^22.7.0",
-    "electron-packager": "^14.2.1"
-  },
-  "dependencies": {
+    "electron-packager": "^14.2.1",
     "lowdb": "^1.0.0"
-  },
-  "build": {
-    "productName": "RightNow",
-    "appId": "com.lixiaochun.RightNow",
-    "copyright": "lixiaochun",
-    "directories": {
-      "output": "build"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowElevation": true,
-      "allowToChangeInstallationDirectory": true,
-      "installerIcon": "./asset/icon.png",
-      "uninstallerIcon": "./asset/icon.png",
-      "installerHeaderIcon": "./asset/icon.png",
-      "createDesktopShortcut": true,
-      "createStartMenuShortcut": true,
-      "shortcutName": "NOW",
-      "include": "build/script/installer.nsh"
-    },
-    "win": {
-      "icon": "./asset/icon.png",
-      "target": [
-        {
-          "target": "nsis",
-          "arch": [
-            "ia32"
-          ]
-        }
-      ]
-    }
   }
 }

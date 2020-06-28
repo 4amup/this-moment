@@ -1,4 +1,5 @@
 node_modules
+build
 
 # user data 文件夹
 userdata/*.json

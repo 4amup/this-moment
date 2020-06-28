@@ -1,9 +1,10 @@
-const path = require('path')
+const path = require('path');
+const Common = require('./common');
 const Datastore = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
-const SETTING_PATH = new FileSync(path.join(__dirname, '../../userdata/setting.json'));
-const ITEM_PATH = new FileSync(path.join(__dirname, '../../userdata/items.json'));
+const SETTING_PATH = new FileSync(path.join(__dirname, Common.DB_SETTING));
+const ITEM_PATH = new FileSync(path.join(__dirname, Common.DB_ITEMS));
 
 const settingDB = Datastore(SETTING_PATH);
 const itemDB = Datastore(ITEM_PATH);

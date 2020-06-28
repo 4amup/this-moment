@@ -1,0 +1,46 @@
+{
+  "items": [
+    {
+      "id": 1593353275867,
+      "create_dt": 1593353275867,
+      "update_dt": 1593353294200,
+      "open": false,
+      "content": "你好，小伙子",
+      "content_date": "2020-06-03",
+      "content_time": "00:08",
+      "content_type": "full",
+      "color": "#e7e7eb",
+      "pin": false,
+      "position": [
+        1200,
+        120
+      ],
+      "size": [
+        486,
+        121
+      ]
+    },
+    {
+      "id": 1593353311255,
+      "create_dt": 1593353311255,
+      "update_dt": 1593353316312,
+      "open": false,
+      "content": "人生啊",
+      "content_date": "",
+      "content_time": "",
+      "content_type": "second",
+      "color": "#e7e7eb",
+      "pin": false,
+      "position": [
+        1200,
+        120
+      ],
+      "size": {
+        "width": 280,
+        "height": 120,
+        "minWidth": 280,
+        "minHeight": 120
+      }
+    }
+  ]
+}
