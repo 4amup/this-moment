@@ -4,8 +4,7 @@
   "description": "life-timer",
   "main": "./src/main.js",
   "scripts": {
-    "start": "electron .",
-    "package": "electron-packager ./src now --platform=win32 --arch=x64 --icon=./assets/icon.ico --out=./build --asar --app-version=1.0.0 --overwrite"
+    "start": "electron ."
   },
   "repository": "https://github.com/4amup/life-timer.git",
   "keywords": [],
@@ -13,6 +12,7 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^9.0.4",
+    "electron-builder": "^22.7.0",
     "electron-packager": "^14.2.1",
     "lowdb": "^1.0.0"
   }
