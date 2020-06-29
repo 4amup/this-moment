@@ -15,6 +15,7 @@ let item = null;
 let userCommand = document.getElementById('user-command');
 let listElement = document.getElementById('list');
 let searchElement = document.getElementById('search');
+let blankElement = document.getElementById('blank');
 
 //菜单：显示和删除动态切换显示
 let menu = new Menu();
@@ -112,18 +113,16 @@ function handleDoubleClick(event) {
 
 // 由item数组渲染list列表
 function renderList() {
+    listElement.innerText = null;
+
     // 同步数据及清空
     items = remote.getGlobal('items');
-    listElement.innerText = null;
 
     if (items.length > 0) {
         items.forEach(item => renderItem(event, item));
-    } else {
-        let div = document.createElement("div");
-        div.innerText = '写点你的人生海浪吧！';
-        listElement.appendChild(div);
-
     }
+
+    checkItem();
 }
 
 // 由item属性，渲染item样式
@@ -160,6 +159,8 @@ function renderItem(event, item, keyWord) {
 
     // 内容放到节点上
     element.innerHTML = innerHTML;
+
+    checkItem();
 }
 
 // 根据id删除item节点
@@ -168,6 +169,8 @@ function removeItem(event, item) {
     if (element) {
         listElement.removeChild(element);
     }
+
+    checkItem();
 }
 
 // 计算时间，返回字符串，如果是今天，返回具体时间，否则返回5天前
@@ -281,6 +284,14 @@ function getPosition() {
     }
 
     return position;
+}
+
+function checkItem() {
+    if (listElement.children.length > 0) {
+        listElement.style.backgroundImage = 'none';
+    } else {
+        listElement.style.backgroundImage = `url(${Common.BLANK})`;
+    }
 }
 
 // 更新单个item

@@ -38,6 +38,9 @@
     padding: 0 15px;
     flex-direction: column;
     overflow: auto;
+    min-height: 256px;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 #list .item {
