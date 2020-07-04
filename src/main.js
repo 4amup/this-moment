@@ -1,8 +1,8 @@
 const { app, ipcMain, Tray, Menu } = require('electron');
 const path = require('path');
-const { settingDB, itemDB } = require('./lib/database')
+const { settingDB, itemDB } = require('./lib/database.js')
 const Common = require('./lib/common.js');
-global = require('./lib/global');
+global = require('./lib/global.js');
 
 const LoadWindow = require('./windows/controllers/loadWindow.js')
 const ListWindow = require('./windows/controllers/listWindow.js')
