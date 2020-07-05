@@ -1,5 +1,3 @@
-# life-timer
-
 # 页面设计
 - 加载页面：实现数据的加载，数据结构是一个data对象，包含items数组
 - list：管理items的增删查
