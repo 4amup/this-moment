@@ -22,12 +22,13 @@ class App {
             this.initApp();
             this.initIpc();
         } else {
-
+            app.quit();
         }
     }
 
     CheckInstance() {
-        return true
+        const single = app.requestSingleInstanceLock();
+        return single;
     }
 
     initApp() {
@@ -38,7 +39,13 @@ class App {
         app.on('window-all-closed', () => {
             if (process.platform !== 'darwin') {
                 return false;
-                // app.quit()
+            }
+        });
+        app.on("second-instance", () => {
+            if (this.listWindow) {
+                this.listWindow.focus();
+            } else {
+                this.createListWindow();
             }
         });
     }
