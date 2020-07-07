@@ -1,169 +1,331 @@
-// Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require('electron')
-const fs = require('fs')
+const { app, ipcMain, Tray, Menu } = require('electron');
+const path = require('path');
+const { settingDB, itemDB } = require('./lib/database.js')
+const Common = require('./lib/common.js');
+global = require('./lib/global.js');
 
-// 数据对象data，初始化时为空，在加载完listWindow后，此对象被赋值
-global.data = {
-    data: null,
-    itemWindows: new Set()
-}
+const LoadWindow = require('./windows/controllers/loadWindow.js')
+const ListWindow = require('./windows/controllers/listWindow.js')
+const ItemWindow = require('./windows/controllers/itemWindow.js')
 
-// 窗口引用
-let loadWindow = null
-let listWindow = null
-// let itemWindows = new Set()
-
-// 创建数据载入窗口
-const createLoadWindow = exports.createLoadWindow = () => {
-    loadWindow = new BrowserWindow({
-        width: 200,
-        height: 200,
-        webPreferences: {
-            nodeIntegration: true,
-            // webSecurity: false
-        },
-    })
-
-    loadWindow.loadURL(`file://${__dirname}/windows/views/load.html`)
-
-    loadWindow.once('ready-to-show', () => {
-        loadWindow.show()
-    })
-
-    // 窗口关闭事件
-    loadWindow.on('closed', () => {
-        loadWindow = null
-    })
-
-    loadWindow.webContents.openDevTools()
-}
-
-// 创建main窗口
-function createListWindow() {
-    listWindow = new BrowserWindow({
-        width: 800,
-        height: 800,
-        frame: false,
-        webPreferences: {
-            nodeIntegration: true
-        }
-    })
-    listWindow.setMenu(null)
-    listWindow.loadURL(`file://${__dirname}/windows/views/list.html`)
-    listWindow.webContents.openDevTools()
-    listWindow.on('closed', () => {
-        listWindow = null
-    })
-}
-
-// 创建item窗口
-// const createItemWindow = exports.createItemWindow = (itemId) => {
-const createItemWindow = exports.createItemWindow = (item) => {
-    let itemWindow = new BrowserWindow({
-        width: 500,
-        height: 600,
-        frame: false,
-        webPreferences: {
-            nodeIntegration: true
-        }
-    })
-
-    // 将数据id传递给窗口
-    // if (item) itemWindow.itemId = item.id
-    itemWindow.item = item
-    itemWindow.setMenu(null)
-    itemWindow.loadURL(`file://${__dirname}/windows/views/item.html`)
-
-    itemWindow.once('ready-to-show', () => {
-        itemWindow.show();
-    })
-
-    itemWindow.on('closed', () => {
-        // itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
-        global.data.itemWindows.delete(itemWindow) //从已关闭的窗口Set中移除引用
-        itemWindow = null
-    })
-
-    // itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
-    global.data.itemWindows.add(itemWindow) //将item窗口添加到已打开时设置的窗口
-    itemWindow.webContents.openDevTools()
-    return itemWindow
-}
-
-// app准备好之后，加载载入文件窗口
-app.whenReady().then(createLoadWindow)
-
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-    if (process.platform !== 'darwin') app.quit()
-})
-
-app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
-})
-
-
-// 根据主窗口异步消息，加载数据，加载数据完成后，创建main窗口
-ipcMain.on('load-data', (event) => {
-    // 同步开始载入文件
-    global.data.data = require('./lib/loadfile')
-
-    // 创建main窗口
-    createListWindow()
-
-    let items = global.data.data.items
-
-    // 创建打开状态item窗口
-    if (items) {
-        items = items.filter((item) => {
-            return item.open == true
-        })
-
-        items.forEach(item => {
-            createItemWindow(item)
-        })
+class App {
+    constructor() {
+        // 窗口管理
+        this.loadWindow = null;
+        this.listWindow = null;
+        this.itemWindows = new Array();
+        this.tray = null;
     }
 
-    // 发送消息，关闭数据载入窗口
-    event.sender.send('load-end')
-})
+    init() {
+        if (this.CheckInstance()) {
+            this.initApp();
+            this.initIpc();
+        } else {
 
-// item窗口更新完毕后，更新主进程数据
-ipcMain.on('update-items', () => {
-    if (listWindow) listWindow.reload()
-})
-
-// 打开主窗口
-ipcMain.on('show-main', () => {
-    if (listWindow) {
-        listWindow.focus()
-    } else {
-        createListWindow()
+        }
     }
-})
 
-ipcMain.on('open-item-window', openItemWindow)
+    CheckInstance() {
+        return true
+    }
 
-function openItemWindow(event, item) {
-    if (!item) return
-    // 原open状态为false才可以新建窗口：储存->更新数据->建新窗口->控制台打印信息
-    if (item.open == false) {
-        let itemPath = path.join('./data/', item.id + '.json')
-        item.open = true
-        fs.writeFile(itemPath, JSON.stringify(item, "", "\t"), (err) => {
-            if (err) throw err
-            updateItems(item, "update")
-            mainProcess.createItemWindow(item)
-            console.log(item.id + "is saved")
+    initApp() {
+        app.on('ready', () => {
+            this.createTray();
+            this.createLoadWindow();
+        });
+        app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') {
+                return false;
+                // app.quit()
+            }
+        });
+    }
+
+    initIpc() {
+        // 从数据库读取数据，绑定对象引用
+        ipcMain.on('load-data', event => {
+            global.setting = settingDB.value();
+            global.items = itemDB.get('items').value();
+
+            let items = global.items.filter(item => {
+                return item.open === true;
+            });
+
+            // 创建显示窗口
+            items.forEach(item => {
+                this.createItemWindow(item)
+            });
+
+            // 根据设置选项决定是否打开list窗口，如没有open的item窗口组，则直接打开
+            if (items.length == 0) {
+                this.createListWindow();
+            } else if (global.setting.open) {
+                this.createListWindow();
+            };
+
+            // 读取完毕关闭数据载入窗口
+            this.loadWindow.close();
         })
-    } else {// focus这个item窗口
 
-        let itemWindow = null
-        global.data.itemWindows.forEach(value => {
-            if (value.item.id === item.id) {
-                itemWindow = value
+        // 创建item窗口对象
+        ipcMain.on('open-item', (event, item) => {
+            this.createItemWindow(item);
+            if (this.listWindow) this.listWindow.webContents.send('render-item', item);
+        });
+
+        // 更新item窗口对象显示状态
+        ipcMain.on('update-item', (event, item) => {
+            let itemWindow = this.itemWindows.find(value => {
+                return value.item.id === item.id;
+            });
+
+            itemWindow.setAlwaysOnTop(item.pin);
+
+            this.modifyItemDB(item);
+
+            if (this.listWindow) this.listWindow.webContents.send('render-item', item);
+        });
+
+        // 关闭item窗口显示
+        ipcMain.on('close-item', (event, item) => {
+            // 关闭对应窗口
+            let itemWindow = this.itemWindows.find(value => {
+                return value.item.id === item.id;
+            });
+
+            if (itemWindow) itemWindow.close();
+
+            item.open = false;
+
+            // 如果content变成空的，就删除这个item
+            if (item.content) {
+                this.modifyItemDB(item);
+                if (this.listWindow) this.listWindow.webContents.send('render-item', item);
+            } else {
+                this.deleteItemDB(item);
+                if (this.listWindow) this.listWindow.webContents.send('remove-item', item);
+            }
+        });
+
+        // 删除item对象并关闭对应窗口
+        ipcMain.on('delete-item', (event, item) => {
+            // 关闭对应窗口
+            let itemWindow = this.itemWindows.find(value => {
+                return value.item.id === item.id;
+            });
+
+            if (itemWindow) itemWindow.close();
+
+            // 删除item
+            this.deleteItemDB(item);
+
+            // 更新list视图
+            if (this.listWindow) this.listWindow.webContents.send('remove-item', item);
+        });
+
+        // 显示list页面
+        ipcMain.on('show-list', () => {
+            if (this.listWindow) {
+                this.listWindow.focus();
+            } else {
+                this.createListWindow();
+            }
+        });
+
+        // 在list页面切换setting页面
+        ipcMain.on('show-setting', () => {
+            this.listWindow.loadURL(Common.WINDOW_URL.setting);
+        });
+
+        // 切换回list页面
+        ipcMain.on('back', () => {
+            this.listWindow.loadURL(Common.WINDOW_URL.list);
+        });
+
+        // 设置项改变
+        ipcMain.on('update-setting', (event, setting) => {
+            settingDB.setState(setting).write();
+            global.setting = setting;
+
+            if (setting.login) {
+                app.setLoginItemSettings({
+                    openAtLogin: true,
+                });
+            } else {
+                app.setLoginItemSettings({
+                    openAtLogin: false,
+                });
+            }
+
+        });
+
+        ipcMain.on('sync-items', event => {
+            if (this.listWindow) {
+                this.listWindow.webContents.send('sync-items', global.items);
             }
         })
-        if (itemWindow) itemWindow.focus()
+    }
+
+    createTray() {
+        this.tray = new Tray(path.join(__dirname, Common.TRAY));
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: '显示列表',
+                type: 'normal',
+                click: () => {
+                    this.createListWindow();
+                },
+            },
+            { label: '退出程序', type: 'normal', role: 'quit' }
+        ])
+        this.tray.setToolTip('This is my application.')
+        this.tray.setContextMenu(contextMenu)
+        this.tray.on('click', () => {
+            if (this.listWindow) {
+                this.listWindow.close();
+            } else {
+                this.createListWindow();
+            }
+        });
+    }
+
+    createLoadWindow() {
+        this.loadWindow = new LoadWindow();
+        this.loadWindow.once('ready-to-show', () => {
+            this.loadWindow.show();
+        });
+        // this.loadWindow.show();
+
+        this.loadWindow.on('closed', () => {
+            this.loadWindow = null;
+        });
+    }
+
+    createListWindow() {
+        if (this.listWindow) {
+            this.listWindow.focus();
+            return;
+        }
+        this.listWindow = new ListWindow();
+        this.listWindow.once('ready-to-show', () => {
+            this.listWindow.show();
+        });
+
+        this.listWindow.on('closed', () => {
+            this.listWindow = null;
+            settingDB.set('open', false)
+                .write();
+            global.setting.open = false;
+        });
+
+        this.listWindow.on('focus', () => {
+            settingDB.set('open', true)
+                .write();
+            global.setting.open = true;
+        });
+    }
+
+    createItemWindow(item) {
+        // 遍历寻找当前窗口对象，如果窗口已经创建，则聚焦此窗口
+        let itemWindow = this.itemWindows.find(value => {
+            return value.item.id === item.id;
+        });
+
+        if (itemWindow) {
+            itemWindow.focus();
+            return;
+        }
+
+        // 设置窗口打开状态
+        item.open = true;
+
+        itemWindow = new ItemWindow(item);
+
+        // 内存中的窗口数组管理
+        this.itemWindows.unshift(itemWindow);
+
+        // 窗口置顶
+        itemWindow.setAlwaysOnTop(item.pin)
+
+        // 窗口显示
+        itemWindow.once('ready-to-show', () => {
+            itemWindow.show();
+        });
+
+        // 窗口关闭
+        itemWindow.on('closed', () => {
+            // 窗口关闭后，删除该窗口的在窗口集合中的引用
+            let index = this.itemWindows.findIndex(value => {
+                return value.item.id === itemWindow.item.id;
+            });
+
+            this.itemWindows.splice(index, 1);
+
+            itemWindow = null;
+        });
+
+        itemWindow.on('focus', () => {
+            itemWindow.webContents.send('item-change');
+        });
+
+        itemWindow.on('blur', () => {
+            itemWindow.webContents.send('item-change');
+        });
+
+        itemWindow.on('move', () => {
+            let item = itemWindow.item;
+            item.position = itemWindow.getPosition();
+            this.modifyItemDB(item);
+        });
+
+        itemWindow.on('resize', () => {
+            let item = itemWindow.item;
+            item.size = itemWindow.getSize();
+            this.modifyItemDB(item);
+        });
+
+        this.modifyItemDB(item);
+
+    }
+
+    // 查找，找到更新，找不到插入
+    modifyItemDB(item) {
+        let result = itemDB
+            .get('items')
+            .find({ id: item.id })
+            .value();
+
+        if (result) {
+            itemDB.get('items')
+                .find({ id: item.id })
+                .assign(item)
+                .write();
+        } else {
+            itemDB.get('items')
+                .push(item)
+                .write()
+        }
+    }
+
+    // 删除，找到删除，找不到无效
+    deleteItemDB(item) {
+        let result = itemDB.get('items')
+            .find({ id: item.id })
+            .value();
+
+        // 如果content变成空的，就删除这个item
+        if (result) {
+            itemDB.get('items')
+                .remove({ id: item.id })
+                .write();
+        }
+    }
+
+    // 设置setup数据保存
+    saveSetting(setting, boolean) {
+        settingDB.set(setting, boolean);
     }
 }
+new App().init()

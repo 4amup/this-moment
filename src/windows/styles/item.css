@@ -1,7 +1,120 @@
-/* 无边框需要拖动的hack写法 */
-body {
-    -webkit-app-region: drag
+.container {
+    margin:0px;
+    padding:0px;
+    height:100%;
+    position: relative;
+    overflow: hidden;
 }
-button, input {
-    -webkit-app-region: no-drag
+
+#time-command {
+    height: 35px;
+    width: 100%;
+    display: inline-flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border: 1px solid rgb(118, 118, 118);
+
+}
+
+#time-command input {
+    margin: 0;
+    height: 35px;
+    line-height:100%;
+    background-color: rgba(118, 118, 118, 0.2);
+    border: 1px solid rgb(118, 118, 118);
+    border-top: 0;
+    border-bottom: 0;
+    box-sizing: border-box;
+}
+
+#time-command #content-date {
+    border-left: 0;
+}
+
+#time-command input[type="radio"] {
+    margin: 0 5px;
+}
+
+#user-command button {
+    -webkit-app-region: no-drag;
+}
+
+#user-command button > * {
+    pointer-events: none;
+    user-select: none;
+}
+
+#user-setting button > * {
+    pointer-events: none;
+    user-select: none;
+}
+
+#content-container {
+    padding: 30px 0 0 0;
+}
+
+#user-setting {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 20%;
+    min-height: 90px;
+    max-height: 150px;
+    min-width: 280px;
+    max-width: 400px;
+    overflow: hidden;
+    display: flex;
+    flex-flow: column;
+    background-color: white;
+    z-index: 99;
+}
+
+#user-setting div:hover {
+    background-color: rgba(0,0,0,0.2);
+}
+
+#user-setting .color-item:hover {
+    background-color:  rgba(0,0,0,0.1) !important;
+}
+
+#user-setting .setting-item {
+    height: 25%;
+}
+
+#user-setting .setting-item input{
+    margin: 0 5px;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#user-setting .setting-item span{
+    margin: 0;
+    height: 100%;
+    vertical-align: middle;
+}
+
+#color-palette {
+    display: flex;
+    flex-flow: row;
+}
+
+#color-palette .color-item {
+    flex: 1;
+}
+
+#message {
+    position: absolute;
+    top: 35px;
+    bottom: 35px;
+    left: 0;
+    margin: 15px;
+}
+
+#content {
+    display: inline-block;
+    min-width: 20px;
+    font-weight: bold;
 }

@@ -1,0 +1,26 @@
+{
+  "items": [
+    {
+      "id": 1593435281227,
+      "create_dt": 1593435281227,
+      "update_dt": 1593435300183,
+      "open": false,
+      "content": "nihc",
+      "content_date": "",
+      "content_time": "21:54",
+      "content_type": "minute",
+      "color": "#e7e7eb",
+      "pin": false,
+      "position": [
+        1200,
+        120
+      ],
+      "size": {
+        "width": 280,
+        "height": 120,
+        "minWidth": 280,
+        "minHeight": 120
+      }
+    }
+  ]
+}

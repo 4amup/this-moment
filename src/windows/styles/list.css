@@ -1,12 +1,72 @@
-/* 无边框需要拖动的hack写法 */
-body {
-    -webkit-app-region: drag;
-    background-color: grey;
-}
-button, input {
-    -webkit-app-region: no-drag
+.container .main {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width:100%;
+    height: 100%;
+    position:absolute;
+    top:35px;
+    bottom:0px;
 }
 
-.item {
-    -webkit-app-region: no-drag
+.container .main .top {
+    padding: 0 15px;
+}
+
+.container .main .top .title {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    user-select: none;
+}
+
+.container .search {
+    width: 100%;
+}
+
+#search {
+    border: 0;
+    outline: none;
+    background-color: lightgray;
+    padding: 10px;
+    width: 100%;
+    border-radius: 3px;
+}
+
+#list {
+    display: flex;
+    padding: 0 15px;
+    flex-direction: column;
+    overflow: auto;
+    min-height: 256px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+#list .item {
+    background-color: bisque;
+    margin-top: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    border-radius: 3px;
+}
+
+#list div > * {
+    pointer-events: none;
+    user-select: none;
+}
+
+
+
+#list div time {
+    text-align: right;
+    font-size: xx-small;
+    color: rgba(0, 0, 0, 0.4);
+}
+
+#list .fold {
+    background:
+        linear-gradient(to left top, transparent 50%, rgba(0, 0, 0, 0.4) 0) no-repeat 100% 100% / 1.4em 1.4em,
+        linear-gradient(-45deg, transparent 1em, rgba(0, 0, 0, 0) 0);
 }

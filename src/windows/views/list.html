@@ -3,27 +3,59 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <link rel="stylesheet" type="text/css" href="../styles/common.css">
   <link rel="stylesheet" type="text/css" href="../styles/list.css">
+  <link rel="stylesheet" type="text/css" href="../styles/iconfont.css">
   <title>人生日历</title>
 </head>
 
 <body>
-  <div id="container">
+  <div class="container">
     <div id="user-command">
-      <button id="add">+</button>
-      <button id="setting">...</button>
-      <button id="close">X</button>
+      <button id="add" title="add">
+        <span class="iconfont icon-add"></span>
+      </button>
+      <button id="setting" title="setting">
+        <span class="iconfont icon-setup"></span>
+      </button>
+      <button id="close">
+        <span class="iconfont icon-close"></span>
+      </button>
     </div>
-    <div>
-      <input placeholder="搜索..." type="search" id="search">
-    </div>
-    <div id="list">
-      <span id="message"></span>
+    <div class="main">
+      <div class="top">
+        <div class="title">
+          <h3>此刻</h3>
+        </div>
+        <div class="search">
+          <input placeholder="搜索..." type="search" id="search">
+        </div>
+      </div>
+      <div id="list">
+        <div class="item">
+          <time>22:11</time>
+          <p>示例数据</p>
+        </div>
+        <div class="item">
+          <time>22:11</time>
+          <p>示例数据</p>
+        </div>
+        <div class="item">
+          <time>22:11</time>
+          <p>示例数据</p>
+        </div>
+        <div class="item">
+          <time>22:11</time>
+          <p>示例数据</p>
+        </div>
+        <div class="item">
+          <time>22:11</time>
+          <p>示例数据</p>
+        </div>
+      </div>
     </div>
   </div>
-  <script src="../controllers/list.js"></script>
+  <script src="../javascript/list.js"></script>
 </body>
 
 </html>

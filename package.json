@@ -4,13 +4,39 @@
   "description": "life-timer",
   "main": "./src/main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "builder": "electron-builder"
   },
   "repository": "https://github.com/4amup/life-timer.git",
   "keywords": [],
   "author": "lixiaochun",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^8.2.3"
+    "electron": "^9.0.4",
+    "electron-builder": "^22.7.0",
+    "electron-packager": "^14.2.1",
+    "lowdb": "^1.0.0"
+  },
+  "dependencies": {
+    "lowdb": "^1.0.0"
+  },
+  "build": {
+    "appId": "com.lixiaochun.now",
+    "copyright": "lixiaochun",
+    "productName": "now",
+    "files": [
+      "./src"
+    ],
+    "extraResources": {
+      "from": "./src/userdata/",
+      "to": "userdata"
+    },
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    }
   }
 }

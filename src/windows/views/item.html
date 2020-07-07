@@ -3,27 +3,67 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
-  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <link rel="stylesheet" type="text/css" href="../styles/common.css">
   <link rel="stylesheet" type="text/css" href="../styles/item.css">
+  <link rel="stylesheet" type="text/css" href="../styles/iconfont.css">
   <title>人生日历</title>
 </head>
 
 <body>
-  <div id="container">
+  <div class="container">
     <div id="user-command">
-      <button id="add">+</button>
-      <button id="menu">...</button>
-      <button id="del">D</button>
-      <button id="exit">X</button>
+      <button id="add">
+        <span class="iconfont icon-add"></span>
+      </button>
+      <button id="menu">
+        <span class="iconfont icon-more"></span>
+      </button>
+      <button id="pin">
+        <span class="iconfont icon-pin"></span>
+      </button>
+      <button id="close">
+        <span class="iconfont icon-close"></span>
+      </button>
     </div>
-    <div id="content-container">
-      <input type="text" id="content" placeholder="记下生命中的重要时刻...">
-      <input type="datetime-local" name="" id="content-dt">
-      <!-- <input type="date" name="" id="content-dt"> -->
+    <div id="user-setting">
+      <div id="color-palette" class="setting-item">
+        <div class="color-item">
+          <span class="iconfont icon-selected" id="color-selected"></span>
+        </div>
+        <div class="color-item">
+        </div>
+        <div class="color-item">
+        </div>
+      </div>
+      <div id="show-list" class="setting-item">
+        <span class="iconfont icon-list"></span>显示列表
+      </div>
+      <div id='delete' class="setting-item">
+        <span class="iconfont icon-del"></span>删除此刻
+      </div>
+      <div id="content-type" class="setting-item">
+        <input type="radio" name="content-type" id="second"><span>秒</span>
+        <!-- <label for="second">秒</label> -->
+        <input type="radio" name="content-type" id="minute">
+        <label for="minute">分</label>
+        <input type="radio" name="content-type" id="hour">
+        <label for="hour">小时</label>
+        <input type="radio" name="content-type" id="day">
+        <label for="day">天</label>
+        <input type="radio" name="content-type" id="full">
+        <label for="full">自然</label>
+      </div>
+    </div>
+    <div id="message">
+      <span id="content" contenteditable="true" spellcheck="false">事件占位</span>
+      <span id="caltext">还有|已过去255天</span>
+    </div>
+    <div id="time-command">
+      <input type="date" id="content-date">
+      <input type="time" id="content-time">
     </div>
   </div>
-  <script src="../controllers/item.js"></script>
+  <script src="../javascript/item.js"></script>
 </body>
 
 </html>

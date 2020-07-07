@@ -1,0 +1,48 @@
+html, body {
+    height:100%;
+    margin:0;
+}
+
+.container {
+    margin:0px;
+    padding:0px;
+    height:100%;
+    position: relative;
+    overflow: hidden;
+}
+
+#user-command {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 35px;
+    -webkit-app-region: drag;
+    display: flex;
+    background-color:rgba(0,0,0,0.2);
+    justify-content: flex-end;
+}
+
+#user-command button {
+    background-color: transparent;
+    -webkit-app-region: no-drag;
+}
+
+#user-command button:first-child {
+    margin-right: auto;
+}
+
+#user-command button {
+    border: 1px;
+    width: 35px;
+    height: 35px;
+    margin: 0;
+}
+
+#user-command button:hover {
+    background-color: lightgray;
+}
+
+#user-command button > * {
+    pointer-events: none;
+    user-select: none;
+}

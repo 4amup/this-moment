@@ -1,0 +1,21 @@
+#setting-command {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width:100%;
+    height: 100%;
+    position:absolute;
+    top:35px;
+    bottom:0px;
+}
+#setting-command .item-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 20px;
+}
+
+#setting-command h4 {
+   margin: 0 20px;
+   padding: 0;
+}
