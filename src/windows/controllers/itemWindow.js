@@ -18,6 +18,7 @@ class ItemWindow extends BrowserWindow {
             webPreferences: {
                 nodeIntegration: true,
             },
+            skipTaskbar: true,
             x: item.position[0],
             y: item.position[1],
             show: false,

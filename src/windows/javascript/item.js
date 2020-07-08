@@ -233,7 +233,7 @@ function renderMessage(item) {
 
     // 日期为空，日期按当天
     if (!item.content_date) {
-        datetime = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1) < 10 ? "0" + "" + (nowDate.getMonth() + 1) : (nowDate.getMonth() + 1)}-${nowDate.getDate() < 10 ? "0" + "0" + nowDate.getDate() : nowDate.getDate()}`;
+        datetime = `${nowDate.getFullYear()}-${(nowDate.getMonth() + 1) < 10 ? "0" + (nowDate.getMonth() + 1) : (nowDate.getMonth() + 1)}-${nowDate.getDate() < 10 ? "0" + nowDate.getDate() : nowDate.getDate()}`;
     } else {
         datetime = item.content_date;
     }
