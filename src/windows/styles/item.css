@@ -73,6 +73,10 @@
     box-shadow: 2px 2px 5px #888888;
 }
 
+#user-setting #range input {
+    width: 90%;
+}
+
 #user-setting div:hover {
     background-color: rgba(0,0,0,0.2);
 }

@@ -89,6 +89,7 @@ class App {
             });
 
             itemWindow.setAlwaysOnTop(item.pin);
+            itemWindow.setOpacity(item.opacity * 0.01);
 
             this.modifyItemDB(item);
 
@@ -255,6 +256,9 @@ class App {
 
         // 窗口置顶
         itemWindow.setAlwaysOnTop(item.pin)
+        
+        // 窗口透明度
+        itemWindow.setOpacity(item.opacity * 0.01);
 
         // 窗口显示
         itemWindow.once('ready-to-show', () => {
