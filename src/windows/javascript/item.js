@@ -22,6 +22,7 @@ let content_type = document.getElementById('content-type');
 let content_type_checked = document.getElementById(item.content_type);
 let pinElement = document.getElementById('pin');
 let colorSelected = document.getElementById(item.color);
+let opacityElement = document.getElementById('opacity');
 
 // 初始化生成调色板
 renderPalette();
@@ -108,11 +109,11 @@ userSetting.addEventListener("click", event => {
     userSetting.style.visibility = 'hidden';
 });
 
-
 // 自动保存：监听输入时自动保存
 content.addEventListener("input", updateItem);
 content_type.addEventListener("input", updateItem);
 timeCommand.addEventListener("input", updateItem);
+opacityElement.addEventListener("change", updateItem);
 
 // 功能：根据主数据生成颜色选择面板
 function renderPalette() {
@@ -135,6 +136,7 @@ function renderItem(event) {
     content_time.value = item.content_time;
     document.body.style.background = item.color;
     content_type_checked.checked = true;
+    opacityElement.value = item.opacity;
 
     // 样式渲染
     if (item.pin) {
@@ -169,6 +171,7 @@ function updateItem() {
     item.content_date = content_date.value;
     item.content_time = content_time.value;
     item.content_type = getContenType('content-type');
+    item.opacity = opacityElement.value;
 
     // 传送数据回主进程
     ipcRenderer.send('update-item', item);
@@ -205,6 +208,7 @@ function itemCreate() {
         pin: false,
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
+        opacity: 100,
     }
     ipcRenderer.send('open-item', item);
     ipcRenderer.send('update-item', item);

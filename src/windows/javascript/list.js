@@ -245,6 +245,7 @@ function itemCreate() {
         pin: false,
         position: getPosition(),
         size: Common.WINDOW_SIZE_ITEM,
+        opacity: 100,
     }
     ipcRenderer.send('open-item', item);
 }
